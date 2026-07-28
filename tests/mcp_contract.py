@@ -9,6 +9,14 @@ V2_CREATE_OUTCOMES = frozenset(
     {"created", "existing", "rejected", "deferred"},
 )
 
+SCOPED_OWNERSHIP_REASONS = frozenset(
+    {
+        "ownership_mismatch",
+        "seller_not_enabled",
+        "customer_not_found",
+    }
+)
+
 CONTRACT_TOOL_NAMES = (
     "bootstrap_reactivation_cycle",
     "get_reactivation_candidates",
@@ -16,6 +24,13 @@ CONTRACT_TOOL_NAMES = (
     "get_product_recommendations",
     "create_crm_opportunity",
     "send_whatsapp_to_partner",
+)
+
+# Additive scoped fixtures; scheduled CONTRACT_TOOL_NAMES goldens stay unchanged.
+ADDITIVE_CONTRACT_FIXTURES = (
+    "bootstrap_reactivation_cycle_scoped",
+    "bootstrap_reactivation_cycle_ownership_fail",
+    "get_reactivation_candidates_scoped",
 )
 
 TOOL_REQUIRED_DATA_KEYS = {
@@ -79,17 +94,47 @@ def assert_create_v2_batch(data):
         raise AssertionError("unexpected v2 outcomes: %s" % sorted(unexpected))
 
 
+def assert_ownership_fail_payload(data):
+    """Assert scoped bootstrap failure payload with stable reason codes."""
+    if not isinstance(data, dict):
+        raise AssertionError("ownership fail data must be a dict, got %r" % (data,))
+    if "message" not in data or not data["message"]:
+        raise AssertionError("ownership fail payload missing message")
+    reason = data.get("reason")
+    if reason not in SCOPED_OWNERSHIP_REASONS:
+        raise AssertionError(
+            "ownership fail reason must be one of %s, got %r"
+            % (sorted(SCOPED_OWNERSHIP_REASONS), reason)
+        )
+    forbidden = {"config", "sellers", "customers"} & data.keys()
+    if forbidden:
+        raise AssertionError(
+            "ownership fail payload must not include success keys: %s"
+            % sorted(forbidden)
+        )
+    return data
+
+
 def assert_tool_contract(tool_name, envelope):
     """Assert envelope shape and required inner keys for one tool."""
     assert_mcp_envelope(envelope)
     data = envelope["data"]
     if not isinstance(data, dict):
         raise AssertionError("%s envelope data must be a dict" % tool_name)
-    required = TOOL_REQUIRED_DATA_KEYS.get(tool_name)
+    if "reason" in data:
+        assert_ownership_fail_payload(data)
+        return data
+    # Fixture/tool aliases (e.g. bootstrap_reactivation_cycle_scoped) map to base keys.
+    base_tool = tool_name
+    for known in TOOL_REQUIRED_DATA_KEYS:
+        if tool_name == known or tool_name.startswith(known + "_"):
+            base_tool = known
+            break
+    required = TOOL_REQUIRED_DATA_KEYS.get(base_tool)
     if required and not required <= data.keys():
         missing = ", ".join(sorted(required - data.keys()))
         raise AssertionError("%s missing data keys: %s" % (tool_name, missing))
-    if tool_name == "create_crm_opportunity" and "contract_version" in data:
+    if base_tool == "create_crm_opportunity" and "contract_version" in data:
         assert_create_v2_batch(data)
     return data
 

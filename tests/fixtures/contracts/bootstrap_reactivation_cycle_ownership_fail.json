@@ -1,0 +1,7 @@
+{
+  "request_id": "req-bootstrap-ownership-fail-001",
+  "data": {
+    "message": "Customer not found for seller scope.",
+    "reason": "ownership_mismatch"
+  }
+}

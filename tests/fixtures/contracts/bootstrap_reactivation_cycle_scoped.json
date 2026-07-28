@@ -1,0 +1,36 @@
+{
+  "request_id": "req-bootstrap-scoped-001",
+  "data": {
+    "config": {
+      "active": true,
+      "cooldown_days": 30,
+      "inactivity_days_primary": 30,
+      "inactivity_days_secondary": 45,
+      "min_confidence_threshold": 0.5,
+      "opportunity_cap_per_seller": 20,
+      "priority_rules": [
+        {
+          "label": "high",
+          "min_confidence": 0.8,
+          "min_opportunity_score": 3000.0
+        }
+      ]
+    },
+    "sellers": [
+      {
+        "seller_id": 81,
+        "partner_id": 501,
+        "name": "María López",
+        "mobile": "+5491112345678"
+      }
+    ],
+    "customers": [
+      {
+        "customer_id": 1001,
+        "name": "Distribuidora Norte SA",
+        "seller_id": 81,
+        "identifier": "30-71234567-8"
+      }
+    ]
+  }
+}

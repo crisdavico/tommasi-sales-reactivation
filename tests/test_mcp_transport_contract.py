@@ -15,7 +15,9 @@ from odoo.tests.common import TransactionCase
 
 from odoo.addons.tommasi_sales_reactivation.tests.common import post_test_out_invoice
 from odoo.addons.tommasi_sales_reactivation.tests.mcp_contract import (
+    ADDITIVE_CONTRACT_FIXTURES,
     CONTRACT_TOOL_NAMES,
+    assert_ownership_fail_payload,
     assert_tool_contract,
     classify_tool_response,
     load_contract_fixture,
@@ -253,3 +255,18 @@ class TestMcpContractFixtures(TransactionCase):
         for tool_name in CONTRACT_TOOL_NAMES:
             fixture = load_contract_fixture(tool_name)
             assert_tool_contract(tool_name, fixture)
+
+    def test_additive_scoped_fixtures_are_valid_envelopes(self):
+        for fixture_name in ADDITIVE_CONTRACT_FIXTURES:
+            fixture = load_contract_fixture(fixture_name)
+            data = assert_tool_contract(fixture_name, fixture)
+            if fixture_name.endswith("_ownership_fail"):
+                assert_ownership_fail_payload(data)
+                self.assertEqual(data["reason"], "ownership_mismatch")
+            elif fixture_name.startswith("bootstrap_reactivation_cycle"):
+                self.assertEqual(len(data["sellers"]), 1)
+                self.assertEqual(len(data["customers"]), 1)
+            elif fixture_name.startswith("get_reactivation_candidates"):
+                self.assertEqual(data["seller_id"], 81)
+                self.assertEqual(len(data["candidates"]), 1)
+                self.assertEqual(data["candidates"][0]["customer_id"], 1001)
