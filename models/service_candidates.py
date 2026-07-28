@@ -259,6 +259,22 @@ class TommasiReactivationServiceCandidates(models.AbstractModel):
     # MCP tool
     # ------------------------------------------------------------------
 
+    def _filter_candidate_partner_map(self, partner_map, customer_ids):
+        """Restrict partner map to requested customer ids when provided.
+
+        ``customer_ids=None`` keeps the full seller portfolio (scheduled path).
+        An empty list scopes to no customers. Matching is by partner
+        ``customer_id`` (the bootstrap partner id stored in the map values).
+        """
+        if customer_ids is None:
+            return partner_map
+        allowed = {int(customer_id) for customer_id in customer_ids}
+        return {
+            commercial_id: info
+            for commercial_id, info in partner_map.items()
+            if info["customer_id"] in allowed
+        }
+
     @llm_tool(read_only_hint=True, idempotent_hint=True)
     def get_reactivation_candidates(
         self,
@@ -268,6 +284,7 @@ class TommasiReactivationServiceCandidates(models.AbstractModel):
         request_id: str = None,
         date_from: str = None,
         date_to: str = None,
+        customer_ids: list = None,
     ) -> dict:
         """Preselecciona, con ~4 consultas SQL en lote, los clientes de un vendedor
         que muestran alguna señal de reactivación en la ventana de detección.
@@ -372,6 +389,9 @@ class TommasiReactivationServiceCandidates(models.AbstractModel):
                 ``volume_decline_with_stock``, ``undelivered_so_lines``). Un
                 fallo por cliente devuelve ``detection_context: {"message": ...}``
                 sin interrumpir el resto del lote.
+            customer_ids: Opcional. Lista de IDs de ``res.partner`` para limitar
+                el barrido a esos clientes (modo on-demand). ``None`` mantiene
+                la cartera completa del vendedor; ``[]`` no devuelve candidatos.
         Returns:
             Diccionario con ``seller_id``, ``date_range``, ``candidates`` (lista
             de clientes que pasaron al menos un screen, con métricas de revenue
@@ -405,7 +425,10 @@ class TommasiReactivationServiceCandidates(models.AbstractModel):
         date_to = self._parse_date(window["date_to"])
         midpoint = fields.Date.to_string(date_from + (date_to - date_from) / 2)
 
-        partner_map = self._candidate_seller_partners(seller_line[:1], config)
+        partner_map = self._filter_candidate_partner_map(
+            self._candidate_seller_partners(seller_line[:1], config),
+            customer_ids,
+        )
         commercial_ids = list(partner_map.keys())
         if not commercial_ids:
             return self._wrap_mcp_response(

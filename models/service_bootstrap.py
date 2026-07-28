@@ -2,6 +2,12 @@ from odoo import models
 
 from odoo.addons.llm_tool.decorators import llm_tool
 
+_OWNERSHIP_REASON_BY_MESSAGE = {
+    "Customer not found.": "customer_not_found",
+    "Customer has no assigned seller.": "ownership_mismatch",
+    "Customer not found for seller scope.": "ownership_mismatch",
+}
+
 
 class TommasiReactivationServiceBootstrap(models.AbstractModel):
     _inherit = "tommasi.reactivation.service"
@@ -30,15 +36,63 @@ class TommasiReactivationServiceBootstrap(models.AbstractModel):
             for partner in partners
         ]
 
+    def _bootstrap_ownership_failure(self, error_message):
+        """Map ``_seller_env_for_customer`` errors to stable MCP reason codes."""
+        return {
+            "message": error_message,
+            "reason": _OWNERSHIP_REASON_BY_MESSAGE.get(
+                error_message, "ownership_mismatch"
+            ),
+        }
+
+    def _scoped_bootstrap_reactivation_cycle(self, seller_id, customer_id):
+        """Return one seller↔customer cycle context or an ownership failure payload."""
+        enabled_sellers = self._filter_enabled_sellers()
+        seller_line = enabled_sellers.filtered(
+            lambda line: line.user_id.id == seller_id
+        )[:1]
+        if not seller_line:
+            return {
+                "message": "Seller not enabled or not found.",
+                "reason": "seller_not_enabled",
+            }
+
+        partner, _seller_env, error = self._seller_env_for_customer(
+            customer_id, seller_id
+        )
+        if error:
+            return self._bootstrap_ownership_failure(error)
+
+        config = self._get_config()
+        return {
+            "config": self._serialize_config(config),
+            "sellers": [self._serialize_bootstrap_seller(seller_line)],
+            "customers": [
+                {
+                    "customer_id": partner.id,
+                    "name": partner.name,
+                    "seller_id": seller_id,
+                    "identifier": self._partner_identifier(partner),
+                }
+            ],
+        }
+
     @llm_tool(read_only_hint=True, idempotent_hint=True)
-    def bootstrap_reactivation_cycle(self) -> dict:
+    def bootstrap_reactivation_cycle(
+        self, seller_id: int = None, customer_id: int = None
+    ) -> dict:
         """Inicia un ciclo de reactivación comercial y devuelve todo el contexto base.
 
         Es la **primera llamada** del agente de detección. En un solo paso obtiene:
         parámetros operativos, reglas de prioridad, vendedores habilitados y los
         clientes que cada uno tiene asignados en Odoo.
 
-        **Qué filtra automáticamente**
+        Sin ``seller_id``/``customer_id`` (ciclo programado) incluye toda la cartera
+        habilitada. Con ambos IDs valida ownership y limita ``sellers``/``customers``
+        a ese par; fallos de ownership devuelven ``message`` + ``reason`` estables
+        (``ownership_mismatch`` | ``seller_not_enabled`` | ``customer_not_found``).
+
+        **Qué filtra automáticamente** (modo sin scope)
         - Solo incluye vendedores configurados en Reactivación Comercial.
         - Solo devuelve clientes activos cuyo vendedor asignado (`user_id`) es uno
           de esos vendedores habilitados.
@@ -82,14 +136,32 @@ class TommasiReactivationServiceBootstrap(models.AbstractModel):
         ```
 
         Args:
-            Sin parámetros de entrada.
+            seller_id: Opcional. ID de ``res.users`` del vendedor. Requiere
+                ``customer_id`` para activar el modo scoped.
+            customer_id: Opcional. ID de ``res.partner`` del cliente. Requiere
+                ``seller_id`` para activar el modo scoped.
         Returns:
-            Diccionario con tres claves:
+            Diccionario con tres claves en éxito:
             - ``config``: parámetros del ciclo (cooldown, tope por vendedor,
               umbrales de inactividad, reglas de prioridad, etc.).
-            - ``sellers``: lista de vendedores habilitados en la configuración.
-            - ``customers``: lista de clientes asignados a esos vendedores.
+            - ``sellers``: lista de vendedores habilitados (uno en modo scoped).
+            - ``customers``: lista de clientes (uno en modo scoped).
+            En fallo de ownership scoped: ``message`` + ``reason``.
         """
+        if seller_id is not None or customer_id is not None:
+            if seller_id is None or customer_id is None:
+                return self._wrap_mcp_response(
+                    {
+                        "message": (
+                            "seller_id and customer_id must be provided together."
+                        ),
+                        "reason": "ownership_mismatch",
+                    }
+                )
+            return self._wrap_mcp_response(
+                self._scoped_bootstrap_reactivation_cycle(seller_id, customer_id)
+            )
+
         config = self._get_config()
         enabled_sellers = self._filter_enabled_sellers()
         sellers = []

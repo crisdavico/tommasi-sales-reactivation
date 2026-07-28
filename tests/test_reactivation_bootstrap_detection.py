@@ -764,3 +764,63 @@ class TestReactivationBootstrapDetection(ReactivationServiceTestMixin, Transacti
             "_rank_recommendation_tiers",
         ):
             self.assertNotIn(helper_name, tool_names)
+
+    def test_scoped_bootstrap_returns_single_seller_customer_pair(self):
+        result = self._service().bootstrap_reactivation_cycle(
+            seller_id=self.seller_user.id,
+            customer_id=self.customer.id,
+        )
+        self.assertNotIn("message", result)
+        self.assertNotIn("reason", result)
+        self.assertTrue(result["config"]["active"])
+        self.assertEqual(len(result["sellers"]), 1)
+        self.assertEqual(result["sellers"][0]["seller_id"], self.seller_user.id)
+        self.assertEqual(len(result["customers"]), 1)
+        customer = result["customers"][0]
+        self.assertEqual(customer["customer_id"], self.customer.id)
+        self.assertEqual(customer["seller_id"], self.seller_user.id)
+        self.assertEqual(customer["identifier"], self.customer.vat)
+        self.assertEqual(customer["name"], self.customer.name)
+
+    def test_scoped_bootstrap_unscoped_call_still_returns_full_portfolio(self):
+        scoped = self._service().bootstrap_reactivation_cycle(
+            seller_id=self.seller_user.id,
+            customer_id=self.customer.id,
+        )
+        unscoped = self._service().bootstrap_reactivation_cycle()
+        self.assertEqual(len(scoped["customers"]), 1)
+        customer_ids = {row["customer_id"] for row in unscoped["customers"]}
+        self.assertIn(self.customer.id, customer_ids)
+        self.assertIn(self.customer_b.id, customer_ids)
+        self.assertGreaterEqual(len(unscoped["customers"]), 2)
+
+    def test_scoped_bootstrap_fails_ownership_mismatch(self):
+        config = self.Config.get_singleton()
+        self.Seller.create({"config_id": config.id, "user_id": self.other_seller.id})
+        result = self._service().bootstrap_reactivation_cycle(
+            seller_id=self.other_seller.id,
+            customer_id=self.customer.id,
+        )
+        self.assertIn("message", result)
+        self.assertEqual(result["reason"], "ownership_mismatch")
+        self.assertNotIn("config", result)
+        self.assertNotIn("sellers", result)
+        self.assertNotIn("customers", result)
+
+    def test_scoped_bootstrap_fails_seller_not_enabled(self):
+        result = self._service().bootstrap_reactivation_cycle(
+            seller_id=self.other_seller.id,
+            customer_id=self.customer.id,
+        )
+        self.assertIn("message", result)
+        self.assertEqual(result["reason"], "seller_not_enabled")
+        self.assertNotIn("config", result)
+
+    def test_scoped_bootstrap_fails_customer_not_found(self):
+        result = self._service().bootstrap_reactivation_cycle(
+            seller_id=self.seller_user.id,
+            customer_id=999999999,
+        )
+        self.assertIn("message", result)
+        self.assertEqual(result["reason"], "customer_not_found")
+        self.assertNotIn("config", result)

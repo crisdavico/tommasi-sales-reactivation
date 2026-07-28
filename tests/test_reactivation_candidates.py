@@ -435,3 +435,43 @@ class TestReactivationServiceCandidates(TransactionCase):
             fail_row["detection_context"]["message"],
             "Simulated detection context failure",
         )
+
+    def test_customer_ids_filter_returns_only_requested_candidate(self):
+        customer_a = self._make_customer("Scoped Candidate A", "30-15151515-1")
+        customer_b = self._make_customer("Scoped Candidate B", "30-16161616-1")
+        self._bootstrap_qualify_partner(customer_a, self.product)
+        self._bootstrap_qualify_partner(customer_b, self.product)
+        unscoped = self._service().get_reactivation_candidates(self.seller_user.id)
+        self.assertIsNotNone(self._candidate_for(unscoped, customer_a.id))
+        self.assertIsNotNone(self._candidate_for(unscoped, customer_b.id))
+
+        scoped = self._service().get_reactivation_candidates(
+            self.seller_user.id,
+            customer_ids=[customer_a.id],
+        )
+        self.assertNotIn("message", scoped)
+        self.assertEqual(scoped["seller_id"], self.seller_user.id)
+        candidate_ids = {row["customer_id"] for row in scoped["candidates"]}
+        self.assertEqual(candidate_ids, {customer_a.id})
+        self.assertNotIn(customer_b.id, candidate_ids)
+
+    def test_customer_ids_filter_empty_list_returns_no_candidates(self):
+        customer = self._make_customer("Empty Scope Candidate", "30-17171717-1")
+        self._bootstrap_qualify_partner(customer, self.product)
+        result = self._service().get_reactivation_candidates(
+            self.seller_user.id,
+            customer_ids=[],
+        )
+        self.assertNotIn("message", result)
+        self.assertEqual(result["candidates"], [])
+        self.assertEqual(result["screened_out_count"], 0)
+
+    def test_customer_ids_unknown_id_yields_empty_candidates(self):
+        customer = self._make_customer("Known Portfolio Candidate", "30-18181818-1")
+        self._bootstrap_qualify_partner(customer, self.product)
+        result = self._service().get_reactivation_candidates(
+            self.seller_user.id,
+            customer_ids=[999999999],
+        )
+        self.assertNotIn("message", result)
+        self.assertEqual(result["candidates"], [])
