@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record id="reactivation_config_singleton" model="tommasi.reactivation.config">
+        <field name="name">Sales reactivation</field>
+        <field name="company_id" ref="base.main_company" />
+        <field name="active" eval="True" />
+        <field name="cooldown_days">30</field>
+        <field name="opportunity_cap_per_seller">20</field>
+        <field name="low_stock_threshold">5</field>
+        <field name="inactivity_days_primary">30</field>
+        <field name="inactivity_days_secondary">45</field>
+        <field name="suggested_products_max">5</field>
+        <field name="discount_pct">55.0</field>
+        <field name="reminder_stale_days">7</field>
+        <field name="pending_review_archive_days">15</field>
+        <field name="min_confidence_threshold">0.50</field>
+        <field name="bootstrap_min_invoices">3</field>
+        <field name="bootstrap_invoice_window_days">180</field>
+    </record>
+
+    <record id="priority_rule_high" model="tommasi.reactivation.priority.rule">
+        <field name="config_id" ref="reactivation_config_singleton" />
+        <field name="label">high</field>
+        <field name="min_confidence">0.80</field>
+        <field name="min_inactivity_days">45</field>
+        <field name="min_decline_pct">50.0</field>
+        <field name="min_customer_value">0.0</field>
+        <field name="multi_trigger_weight">1.5</field>
+        <field name="cap_order">1</field>
+    </record>
+
+    <record id="priority_rule_medium" model="tommasi.reactivation.priority.rule">
+        <field name="config_id" ref="reactivation_config_singleton" />
+        <field name="label">medium</field>
+        <field name="min_confidence">0.60</field>
+        <field name="min_inactivity_days">30</field>
+        <field name="min_decline_pct">25.0</field>
+        <field name="min_customer_value">0.0</field>
+        <field name="multi_trigger_weight">1.0</field>
+        <field name="cap_order">2</field>
+    </record>
+
+    <record id="priority_rule_low" model="tommasi.reactivation.priority.rule">
+        <field name="config_id" ref="reactivation_config_singleton" />
+        <field name="label">low</field>
+        <field name="min_confidence">0.50</field>
+        <field name="min_inactivity_days">0</field>
+        <field name="min_decline_pct">10.0</field>
+        <field name="min_customer_value">0.0</field>
+        <field name="multi_trigger_weight">0.5</field>
+        <field name="cap_order">3</field>
+    </record>
+</odoo>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record id="demo_opp_pending" model="crm.lead">
+        <field name="name">Reactivación demo pendiente</field>
+        <field name="type">opportunity</field>
+        <field name="partner_id" ref="demo_cust_with_opp_pending" />
+        <field name="user_id" ref="demo_seller_enabled_a" />
+        <field name="stage_id" ref="stage_pendiente_revision" />
+        <field name="reactivation_is_agent" eval="True" />
+        <field name="active" eval="True" />
+        <field name="reactivation_attribution_id">REACT-DEMO-PENDING</field>
+        <field name="reactivation_client_message">Hola, mensaje demo pendiente.</field>
+    </record>
+
+    <record id="demo_opp_contacted" model="crm.lead">
+        <field name="name">Reactivación demo contactado</field>
+        <field name="type">opportunity</field>
+        <field name="partner_id" ref="demo_cust_with_opp_contacted" />
+        <field name="user_id" ref="demo_seller_enabled_a" />
+        <field name="stage_id" ref="stage_cliente_contactado" />
+        <field name="reactivation_is_agent" eval="True" />
+        <field name="active" eval="True" />
+        <field name="reactivation_attribution_id">REACT-DEMO-CONTACTED</field>
+        <field name="reactivation_client_message">Hola, mensaje demo contactado.</field>
+    </record>
+
+    <record id="demo_opp_archived" model="crm.lead">
+        <field name="name">Reactivación demo archivada</field>
+        <field name="type">opportunity</field>
+        <field name="partner_id" ref="demo_cust_archived_opp" />
+        <field name="user_id" ref="demo_seller_enabled_a" />
+        <field name="stage_id" ref="stage_pendiente_revision" />
+        <field name="reactivation_is_agent" eval="True" />
+        <field name="active" eval="False" />
+        <field name="reactivation_attribution_id">REACT-DEMO-ARCHIVED</field>
+    </record>
+
+    <record id="demo_opp_non_agent" model="crm.lead">
+        <field name="name">Oportunidad demo no-agente</field>
+        <field name="type">opportunity</field>
+        <field name="partner_id" ref="demo_cust_active" />
+        <field name="user_id" ref="demo_seller_enabled_a" />
+        <field name="stage_id" ref="stage_pendiente_revision" />
+        <field name="reactivation_is_agent" eval="False" />
+        <field name="active" eval="True" />
+        <field name="reactivation_attribution_id">REACT-DEMO-NON-AGENT</field>
+    </record>
+</odoo>

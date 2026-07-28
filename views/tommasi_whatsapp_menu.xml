@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <menuitem
+        id="menu_tommasi_whatsapp_config"
+        name="WhatsApp"
+        parent="llm.menu_llm_config"
+        action="action_tommasi_whatsapp_config"
+        sequence="48"
+        groups="llm.group_llm_manager"
+    />
+
+    <menuitem
+        id="menu_tommasi_whatsapp_log"
+        name="WhatsApp send logs"
+        parent="llm.menu_llm_config"
+        action="action_tommasi_whatsapp_log"
+        sequence="51"
+        groups="llm.group_llm_manager"
+    />
+</odoo>

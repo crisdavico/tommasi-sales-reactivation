@@ -1,0 +1,27 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_reactivation_config_manager,tommasi.reactivation.config manager,model_tommasi_reactivation_config,llm.group_llm_manager,1,1,0,0
+access_reactivation_seller_manager,tommasi.reactivation.seller manager,model_tommasi_reactivation_seller,llm.group_llm_manager,1,1,1,1
+access_reactivation_priority_rule_manager,tommasi.reactivation.priority.rule manager,model_tommasi_reactivation_priority_rule,llm.group_llm_manager,1,1,1,1
+access_reactivation_config_agent,tommasi.reactivation.config agent,model_tommasi_reactivation_config,group_reactivation_agent,1,0,0,0
+access_reactivation_seller_agent,tommasi.reactivation.seller agent,model_tommasi_reactivation_seller,group_reactivation_agent,1,0,0,0
+access_reactivation_priority_rule_agent,tommasi.reactivation.priority.rule agent,model_tommasi_reactivation_priority_rule,group_reactivation_agent,1,0,0,0
+access_res_partner_agent,res.partner agent,base.model_res_partner,group_reactivation_agent,1,0,0,0
+access_res_users_agent,res.users agent,base.model_res_users,group_reactivation_agent,1,0,0,0
+access_res_company_agent,res.company agent,base.model_res_company,group_reactivation_agent,1,0,0,0
+access_crm_lead_agent,crm.lead agent,crm.model_crm_lead,group_reactivation_agent,1,1,1,0
+access_crm_stage_agent,crm.stage agent,crm.model_crm_stage,group_reactivation_agent,1,0,0,0
+access_sale_order_agent,sale.order agent,sale.model_sale_order,group_reactivation_agent,1,0,0,0
+access_sale_order_line_agent,sale.order.line agent,sale.model_sale_order_line,group_reactivation_agent,1,0,0,0
+access_account_move_agent,account.move agent,account.model_account_move,group_reactivation_agent,1,0,0,0
+access_account_move_line_agent,account.move.line agent,account.model_account_move_line,group_reactivation_agent,1,0,0,0
+access_product_product_agent,product.product agent,product.model_product_product,group_reactivation_agent,1,0,0,0
+access_product_template_agent,product.template agent,product.model_product_template,group_reactivation_agent,1,0,0,0
+access_product_pricelist_agent,product.pricelist agent,product.model_product_pricelist,group_reactivation_agent,1,0,0,0
+access_stock_quant_agent,stock.quant agent,stock.model_stock_quant,group_reactivation_agent,1,0,0,0
+access_reactivation_facts_snapshot_manager,tommasi.reactivation.facts.snapshot manager,model_tommasi_reactivation_facts_snapshot,llm.group_llm_manager,1,1,1,1
+access_reactivation_facts_snapshot_agent,tommasi.reactivation.facts.snapshot agent,model_tommasi_reactivation_facts_snapshot,group_reactivation_agent,1,0,0,0
+access_mail_message_agent,mail.message agent,mail.model_mail_message,group_reactivation_agent,1,1,1,0
+access_whatsapp_config_manager,tommasi.whatsapp.config manager,model_tommasi_whatsapp_config,llm.group_llm_manager,1,1,1,1
+access_whatsapp_log_manager,tommasi.whatsapp.log manager,model_tommasi_whatsapp_log,llm.group_llm_manager,1,1,1,1
+access_whatsapp_config_agent,tommasi.whatsapp.config agent,model_tommasi_whatsapp_config,group_reactivation_agent,1,0,0,0
+access_whatsapp_log_agent,tommasi.whatsapp.log agent,model_tommasi_whatsapp_log,group_reactivation_agent,1,0,1,0

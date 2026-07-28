@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- Seller A — María López (demo_seller_enabled_a) -->
+    <record id="demo_cust_prospect" model="res.partner">
+        <field name="name">Demo Prospect SA</field>
+        <field name="ref">demo_cust_prospect</field>
+        <field name="vat">30-70000001-1</field>
+        <field name="is_company" eval="True" />
+        <field name="active" eval="True" />
+        <field name="user_id" ref="tommasi_sales_reactivation.demo_seller_enabled_a" />
+    </record>
+
+    <record id="demo_cust_active" model="res.partner">
+        <field name="name">Demo Activo SA</field>
+        <field name="ref">demo_cust_active</field>
+        <field name="vat">30-70000002-9</field>
+        <field name="is_company" eval="True" />
+        <field name="active" eval="True" />
+        <field name="user_id" ref="tommasi_sales_reactivation.demo_seller_enabled_a" />
+    </record>
+
+    <record id="demo_cust_reactivation" model="res.partner">
+        <field name="name">Demo Reactivación SA</field>
+        <field name="ref">demo_cust_reactivation</field>
+        <field name="vat">30-70000003-7</field>
+        <field name="is_company" eval="True" />
+        <field name="active" eval="True" />
+        <field name="user_id" ref="tommasi_sales_reactivation.demo_seller_enabled_a" />
+    </record>
+
+    <record id="demo_cust_urgent" model="res.partner">
+        <field name="name">Demo Urgente SA</field>
+        <field name="ref">demo_cust_urgent</field>
+        <field name="vat">30-70000004-5</field>
+        <field name="is_company" eval="True" />
+        <field name="active" eval="True" />
+        <field name="user_id" ref="tommasi_sales_reactivation.demo_seller_enabled_a" />
+    </record>
+
+    <record id="demo_cust_declining" model="res.partner">
+        <field name="name">Demo Caída SA</field>
+        <field name="ref">demo_cust_declining</field>
+        <field name="vat">30-70000005-3</field>
+        <field name="is_company" eval="True" />
+        <field name="active" eval="True" />
+        <field name="user_id" ref="tommasi_sales_reactivation.demo_seller_enabled_a" />
+    </record>
+
+    <record id="demo_cust_growing" model="res.partner">
+        <field name="name">Demo Crecimiento SA</field>
+        <field name="ref">demo_cust_growing</field>
+        <field name="vat">30-70000006-1</field>
+        <field name="is_company" eval="True" />
+        <field name="active" eval="True" />
+        <field name="user_id" ref="tommasi_sales_reactivation.demo_seller_enabled_a" />
+    </record>
+
+    <record id="demo_cust_dropoff" model="res.partner">
+        <field name="name">Demo Dropoff SA</field>
+        <field name="ref">demo_cust_dropoff</field>
+        <field name="vat">30-70000007-0</field>
+        <field name="is_company" eval="True" />
+        <field name="active" eval="True" />
+        <field name="user_id" ref="tommasi_sales_reactivation.demo_seller_enabled_a" />
+    </record>
+
+    <record id="demo_cust_volume_decline" model="res.partner">
+        <field name="name">Demo Volúmen SA</field>
+        <field name="ref">demo_cust_volume_decline</field>
+        <field name="vat">30-70000008-8</field>
+        <field name="is_company" eval="True" />
+        <field name="active" eval="True" />
+        <field name="user_id" ref="tommasi_sales_reactivation.demo_seller_enabled_a" />
+    </record>
+
+    <record id="demo_cust_undelivered" model="res.partner">
+        <field name="name">Demo Pendiente SA</field>
+        <field name="ref">demo_cust_undelivered</field>
+        <field name="vat">30-70000009-6</field>
+        <field name="is_company" eval="True" />
+        <field name="active" eval="True" />
+        <field name="user_id" ref="tommasi_sales_reactivation.demo_seller_enabled_a" />
+    </record>
+
+    <record id="demo_cust_with_opp_pending" model="res.partner">
+        <field name="name">Demo Con Opp SA</field>
+        <field name="ref">demo_cust_with_opp_pending</field>
+        <field name="vat">30-70000010-4</field>
+        <field name="is_company" eval="True" />
+        <field name="active" eval="True" />
+        <field name="user_id" ref="tommasi_sales_reactivation.demo_seller_enabled_a" />
+    </record>
+
+    <record id="demo_cust_with_opp_contacted" model="res.partner">
+        <field name="name">Demo Contactado SA</field>
+        <field name="ref">demo_cust_with_opp_contacted</field>
+        <field name="vat">30-70000011-2</field>
+        <field name="is_company" eval="True" />
+        <field name="active" eval="True" />
+        <field name="user_id" ref="tommasi_sales_reactivation.demo_seller_enabled_a" />
+    </record>
+
+    <record id="demo_cust_archived_opp" model="res.partner">
+        <field name="name">Demo Archivado SA</field>
+        <field name="ref">demo_cust_archived_opp</field>
+        <field name="vat">30-70000012-0</field>
+        <field name="is_company" eval="True" />
+        <field name="active" eval="True" />
+        <field name="user_id" ref="tommasi_sales_reactivation.demo_seller_enabled_a" />
+    </record>
+
+    <record id="demo_cust_pricelist" model="res.partner">
+        <field name="name">Demo Lista Precios SA</field>
+        <field name="ref">demo_cust_pricelist</field>
+        <field name="vat">30-70000013-9</field>
+        <field name="is_company" eval="True" />
+        <field name="active" eval="True" />
+        <field name="user_id" ref="tommasi_sales_reactivation.demo_seller_enabled_a" />
+        <field
+            name="property_product_pricelist"
+            ref="tommasi_sales_reactivation.demo_pricelist"
+        />
+    </record>
+
+    <record id="demo_cust_multi_trigger" model="res.partner">
+        <field name="name">Demo Multi SA</field>
+        <field name="ref">demo_cust_multi_trigger</field>
+        <field name="vat">30-70000014-7</field>
+        <field name="is_company" eval="True" />
+        <field name="active" eval="True" />
+        <field name="user_id" ref="tommasi_sales_reactivation.demo_seller_enabled_a" />
+    </record>
+
+    <record id="demo_cust_sporadic" model="res.partner">
+        <field name="name">Demo Esporádico SA</field>
+        <field name="ref">demo_cust_sporadic</field>
+        <field name="vat">30-70000015-5</field>
+        <field name="is_company" eval="True" />
+        <field name="active" eval="True" />
+        <field name="customer_rank" eval="1" />
+        <field name="user_id" ref="tommasi_sales_reactivation.demo_seller_enabled_a" />
+    </record>
+
+    <record id="demo_cust_supplier" model="res.partner">
+        <field name="name">Demo Proveedor SA</field>
+        <field name="ref">demo_cust_supplier</field>
+        <field name="vat">30-70000016-3</field>
+        <field name="is_company" eval="True" />
+        <field name="active" eval="True" />
+        <field name="supplier_rank" eval="1" />
+        <field name="customer_rank" eval="0" />
+        <field name="user_id" ref="tommasi_sales_reactivation.demo_seller_enabled_a" />
+    </record>
+
+    <record id="demo_cust_draft_noise" model="res.partner">
+        <field name="name">Demo Borrador SA</field>
+        <field name="ref">demo_cust_draft_noise</field>
+        <field name="vat">30-70000017-1</field>
+        <field name="is_company" eval="True" />
+        <field name="active" eval="True" />
+        <field name="customer_rank" eval="1" />
+        <field name="user_id" ref="tommasi_sales_reactivation.demo_seller_enabled_a" />
+    </record>
+
+    <record id="demo_cust_multitier" model="res.partner">
+        <field name="name">Demo Multi-Tier SA</field>
+        <field name="ref">demo_cust_multitier</field>
+        <field name="vat">30-70000018-0</field>
+        <field name="is_company" eval="True" />
+        <field name="active" eval="True" />
+        <field name="user_id" ref="tommasi_sales_reactivation.demo_seller_enabled_a" />
+    </record>
+
+    <record id="demo_cust_low_stock_offer" model="res.partner">
+        <field name="name">Demo Stock Bajo SA</field>
+        <field name="ref">demo_cust_low_stock_offer</field>
+        <field name="vat">30-70000019-8</field>
+        <field name="is_company" eval="True" />
+        <field name="active" eval="True" />
+        <field name="user_id" ref="tommasi_sales_reactivation.demo_seller_enabled_a" />
+    </record>
+
+    <!-- Seller B — Carlos Ruiz (demo_seller_enabled_b) -->
+    <record id="demo_cust_similar_a" model="res.partner">
+        <field name="name">Demo Similar A</field>
+        <field name="ref">demo_cust_similar_a</field>
+        <field name="vat">30-71000001-0</field>
+        <field name="is_company" eval="True" />
+        <field name="active" eval="True" />
+        <field name="user_id" ref="tommasi_sales_reactivation.demo_seller_enabled_b" />
+    </record>
+
+    <record id="demo_cust_similar_b" model="res.partner">
+        <field name="name">Demo Similar B</field>
+        <field name="ref">demo_cust_similar_b</field>
+        <field name="vat">30-71000002-9</field>
+        <field name="is_company" eval="True" />
+        <field name="active" eval="True" />
+        <field name="user_id" ref="tommasi_sales_reactivation.demo_seller_enabled_b" />
+    </record>
+
+    <record id="demo_cust_other_seller" model="res.partner">
+        <field name="name">Demo Otro Vendedor SA</field>
+        <field name="ref">demo_cust_other_seller</field>
+        <field name="vat">30-71000003-8</field>
+        <field name="is_company" eval="True" />
+        <field name="active" eval="True" />
+        <field name="user_id" ref="tommasi_sales_reactivation.demo_seller_enabled_b" />
+    </record>
+
+    <!-- Edge cases -->
+    <record id="demo_cust_no_seller" model="res.partner">
+        <field name="name">Demo Sin Vendedor SA</field>
+        <field name="ref">demo_cust_no_seller</field>
+        <field name="vat">30-72000001-6</field>
+        <field name="is_company" eval="True" />
+        <field name="active" eval="True" />
+    </record>
+
+    <record id="demo_cust_child" model="res.partner">
+        <field name="name">Demo Sucursal (child)</field>
+        <field name="ref">demo_cust_child</field>
+        <field name="vat">30-72000002-4</field>
+        <field name="is_company" eval="True" />
+        <field name="active" eval="True" />
+        <field name="user_id" ref="tommasi_sales_reactivation.demo_seller_enabled_a" />
+        <field name="parent_id" ref="tommasi_sales_reactivation.demo_cust_active" />
+    </record>
+
+    <!-- Company B — Tommasi Demo Sur (multicompany unified tools) -->
+    <record id="demo_cust_company_b_urgent" model="res.partner">
+        <field name="name">Demo Sur Urgente SA</field>
+        <field name="ref">demo_cust_company_b_urgent</field>
+        <field name="vat">30-73000001-5</field>
+        <field name="is_company" eval="True" />
+        <field name="active" eval="True" />
+        <field name="user_id" ref="tommasi_sales_reactivation.demo_seller_company_b" />
+    </record>
+
+    <record id="demo_cust_company_b_shared_seller" model="res.partner">
+        <field name="name">Demo Sur María SA</field>
+        <field name="ref">demo_cust_company_b_shared_seller</field>
+        <field name="vat">30-73000002-3</field>
+        <field name="is_company" eval="True" />
+        <field name="active" eval="True" />
+        <field name="user_id" ref="tommasi_sales_reactivation.demo_seller_enabled_a" />
+    </record>
+
+    <record id="demo_cust_company_b_isolated" model="res.partner">
+        <field name="name">Demo Sur Aislado SA</field>
+        <field name="ref">demo_cust_company_b_isolated</field>
+        <field name="vat">30-73000003-1</field>
+        <field name="is_company" eval="True" />
+        <field name="active" eval="True" />
+        <field name="user_id" ref="tommasi_sales_reactivation.demo_seller_company_b" />
+    </record>
+</odoo>

@@ -1,0 +1,24 @@
+{
+  "request_id": "req-opportunities-001",
+  "data": {
+    "seller_id": 81,
+    "results": {
+      "1001": {
+        "opportunities": [
+          {
+            "opportunity_id": 9001,
+            "attribution_id": "REACT-2026-00001",
+            "stage": "Pendiente de revisión",
+            "stage_id": 42,
+            "stage_xml_id": "tommasi_sales_reactivation.stage_pendiente_revision",
+            "created_at": "2026-07-08 21:05:22",
+            "last_stage_change_at": "2026-07-08 21:05:22"
+          }
+        ]
+      },
+      "1002": {
+        "opportunities": []
+      }
+    }
+  }
+}

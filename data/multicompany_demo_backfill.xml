@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Idempotent backfill for multicompany demo records on existing DBs (-u does not reload demo XML). -->
+    <function model="tommasi.reactivation.demo" name="_ensure_multicompany_demo_records" />
+    <function model="tommasi.reactivation.demo" name="_load_demo_company_b_transactions" />
+</odoo>

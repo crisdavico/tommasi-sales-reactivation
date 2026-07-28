@@ -1,0 +1,111 @@
+{
+  "cycle_id": "e-scenario-test-2026-07-06",
+  "executed_at": "2026-07-06T14:01:32.526422",
+  "scenarios": {
+    "E-01_multi": {
+      "customer": "demo_cust_multi_trigger",
+      "checks": {
+        "stage_pendiente": true,
+        "assigned_seller_a": true,
+        "has_product_table": true,
+        "has_net_price_column": true,
+        "has_tariff_discount_column": true,
+        "has_offer_price_column": false,
+        "has_evidence_section": true,
+        "has_client_message": true,
+        "client_message_in_description": true,
+        "no_raw_json_in_description": true,
+        "priority_set": true
+      },
+      "lead_id": 2286
+    },
+    "E-02": {
+      "customer": "demo_cust_multi_trigger",
+      "checks": {
+        "multi_trigger_type": true,
+        "evidence_readable": true,
+        "no_raw_json": true,
+        "has_table_or_prose": true
+      },
+      "trigger_type": "multi",
+      "evidence_triggers": [
+        "inactivity",
+        "volume_decline_with_stock",
+        "undelivered_so_lines"
+      ]
+    },
+    "E-04": {
+      "customer": "demo_cust_multi_trigger",
+      "checks": {
+        "attribution_format": true,
+        "cycle_id_set": true,
+        "trigger_type_set": true,
+        "confidence_set": true,
+        "source_set": true,
+        "is_agent": true,
+        "creator_set": true
+      },
+      "attribution_id": "REACT-2026-00482",
+      "create_result": {
+        "opportunity_id": 2286,
+        "attribution_id": "REACT-2026-00482"
+      }
+    },
+    "E-01_urgent_existing": {
+      "customer": "demo_cust_urgent",
+      "note": "Opp demo preexistente",
+      "checks": {
+        "stage_pendiente": true,
+        "assigned_seller_a": true,
+        "has_product_table": true,
+        "has_net_price_column": true,
+        "has_tariff_discount_column": true,
+        "has_offer_price_column": false,
+        "has_evidence_section": true,
+        "has_client_message": true,
+        "client_message_in_description": true,
+        "no_raw_json_in_description": true,
+        "priority_set": true
+      },
+      "lead_id": 920
+    },
+    "E-03": {
+      "checks": {
+        "zero_new_sale_orders": true
+      },
+      "new_sale_order_ids": []
+    }
+  },
+  "bootstrap_ok": true,
+  "summary": {
+    "E-01_multi": true,
+    "E-02": true,
+    "E-04": true,
+    "E-01_urgent_existing": true,
+    "E-03": true
+  },
+  "flow_multi_snapshot": {
+    "ctx_keys": [
+      "customer_id",
+      "date_range",
+      "sales_history",
+      "last_purchase",
+      "product_history",
+      "volume_decline_with_stock",
+      "undelivered_so_lines"
+    ],
+    "days_inactive": null,
+    "volume_decline_count": 1,
+    "recommendation_count": 5,
+    "payload_triggers": [
+      "inactivity",
+      "volume_decline_with_stock",
+      "undelivered_so_lines"
+    ],
+    "create_result": {
+      "opportunity_id": 2286,
+      "attribution_id": "REACT-2026-00482"
+    }
+  },
+  "description_excerpt": "<h3>Resumen de evidencia</h3><p><strong>Disparadores:</strong> Inactividad, Caída de volumen con stock, Pedidos pendientes sin entregar</p><h4>Inactividad</h4><p>53 días desde la última compra; nivel de inactividad secundario</p><h4>Caída de volumen con stock</h4><table class=\"table table-bordered\"><thead><tr><th>SKU</th><th>Producto</th><th>Cant. anterior</th><th>Cant. reciente</th><th>Stock</th></tr></thead><tbody><tr><td>DEMO-OK-001</td><td>Producto genérico OK</td><td>2</td><td>0</td><td>50</td></tr></tbody></table><h4>Pedidos pendientes sin entregar</h4><p>1 línea(s) pendiente(s) en 1 pedido(s) de venta.</p><h4>S00115</h4><table class=\"table table-bordered\"><thead><tr><th>SKU</th><th>Producto</th><th>Pedido</th><th>Entregado</th><th>Pendiente</th><th>Stock</th></tr></thead><tbody><tr><td>DEMO-UNDEL-001</td><td>[DEMO-UNDEL-001] Línea SO pendiente</td><td>2</td><td>0</td><td>2</td><td>0</td></tr></tbody></table><h3>Productos sugeridos</h3><table class=\"table table-bordered\"><thead><tr><th>Nombre</th><th>SKU</th><th>Stock</th><th>Precio neto</th><th>Descuento tarifa</th><th>Motivo</th></tr></thead><tbody><tr><td>[DEMO-OK-001] Producto genérico OK</td><td>DEMO-OK-001</td><td>50.0</td><td>80000.0</td><td>0.0%</td><td>Caída de compra</td></tr><tr><td>[DEMO-CAT-001] Aceite demo misma cat.</td><td>DEMO-CAT-001</td><td>40.0</td><td>92000.0</td><td>0.0%</td><td>Misma categoría</td></tr><tr><td>[DEMO-DROP-001] Aceite demo dropoff</td><td>DEMO-DROP-001</td><td>30.0</td><td>85000.0</td><td>0.0%</td><td>Misma categoría</td></tr></tbody></table><h3>Mensaje al cliente</h3><p>Hola, soy de Tommasi. Tenemos stock disponible de [DEMO-OK-001] Producto genérico OK, [DEMO-CAT-001] Aceite demo misma cat. a precio neto de su tarifa. ¿Le interesa?</p>"
+}

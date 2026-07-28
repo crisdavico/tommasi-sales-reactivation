@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record id="demo_seller_enabled_a" model="res.users">
+        <field name="name">María López (Demo A)</field>
+        <field name="login">demo_seller_a</field>
+        <field name="company_id" ref="base.main_company" />
+        <field
+            name="company_ids"
+            eval="[(6, 0, [ref('base.main_company'), ref('tommasi_sales_reactivation.demo_company_b')])]"
+        />
+        <field name="groups_id" eval="[(6, 0, [ref('base.group_user')])]" />
+        <field name="mobile">+5491112345678</field>
+    </record>
+
+    <record id="demo_seller_company_b" model="res.users">
+        <field name="name">Julián Norte (Demo C)</field>
+        <field name="login">demo_seller_c</field>
+        <field name="company_id" ref="tommasi_sales_reactivation.demo_company_b" />
+        <field
+            name="company_ids"
+            eval="[(6, 0, [ref('tommasi_sales_reactivation.demo_company_b')])]"
+        />
+        <field name="groups_id" eval="[(6, 0, [ref('base.group_user')])]" />
+        <field name="mobile">+5491156789012</field>
+    </record>
+
+    <record id="demo_seller_enabled_b" model="res.users">
+        <field name="name">Carlos Ruiz (Demo B)</field>
+        <field name="login">demo_seller_b</field>
+        <field name="company_id" ref="base.main_company" />
+        <field name="groups_id" eval="[(6, 0, [ref('base.group_user')])]" />
+        <field name="mobile">+5491123456789</field>
+    </record>
+
+    <record id="demo_seller_no_mobile" model="res.users">
+        <field name="name">Ana Sin Celular</field>
+        <field name="login">demo_seller_no_mobile</field>
+        <field name="company_id" ref="base.main_company" />
+        <field name="groups_id" eval="[(6, 0, [ref('base.group_user')])]" />
+    </record>
+
+    <record id="demo_seller_configured_c" model="res.users">
+        <field name="name">Pedro Demo (Config C)</field>
+        <field name="login">demo_seller_configured_c</field>
+        <field name="company_id" ref="base.main_company" />
+        <field name="groups_id" eval="[(6, 0, [ref('base.group_user')])]" />
+        <field name="mobile">+5491134567890</field>
+    </record>
+
+    <record id="demo_seller_not_configured" model="res.users">
+        <field name="name">Laura Fuera Config</field>
+        <field name="login">demo_seller_not_config</field>
+        <field name="company_id" ref="base.main_company" />
+        <field name="groups_id" eval="[(6, 0, [ref('base.group_user')])]" />
+        <field name="mobile">+5491145678901</field>
+    </record>
+
+    <record id="demo_reactivation_seller_enabled_a" model="tommasi.reactivation.seller">
+        <field name="config_id" ref="tommasi_sales_reactivation.reactivation_config_singleton" />
+        <field name="user_id" ref="tommasi_sales_reactivation.demo_seller_enabled_a" />
+    </record>
+
+    <record id="demo_reactivation_seller_enabled_b" model="tommasi.reactivation.seller">
+        <field name="config_id" ref="tommasi_sales_reactivation.reactivation_config_singleton" />
+        <field name="user_id" ref="tommasi_sales_reactivation.demo_seller_enabled_b" />
+    </record>
+
+    <record id="demo_reactivation_seller_no_mobile" model="tommasi.reactivation.seller">
+        <field name="config_id" ref="tommasi_sales_reactivation.reactivation_config_singleton" />
+        <field name="user_id" ref="tommasi_sales_reactivation.demo_seller_no_mobile" />
+    </record>
+
+    <record id="demo_reactivation_seller_configured_c" model="tommasi.reactivation.seller">
+        <field name="config_id" ref="tommasi_sales_reactivation.reactivation_config_singleton" />
+        <field name="user_id" ref="tommasi_sales_reactivation.demo_seller_configured_c" />
+    </record>
+
+    <!-- Company B config — enabled sellers (see demo_companies.xml for config record) -->
+    <record id="demo_reactivation_seller_company_b" model="tommasi.reactivation.seller">
+        <field name="config_id" ref="tommasi_sales_reactivation.reactivation_config_company_b" />
+        <field name="user_id" ref="tommasi_sales_reactivation.demo_seller_company_b" />
+    </record>
+
+    <record id="demo_reactivation_seller_shared_a" model="tommasi.reactivation.seller">
+        <field name="config_id" ref="tommasi_sales_reactivation.reactivation_config_company_b" />
+        <field name="user_id" ref="tommasi_sales_reactivation.demo_seller_enabled_a" />
+        <field name="notes">Shared seller across main company and Demo Sur config.</field>
+    </record>
+</odoo>

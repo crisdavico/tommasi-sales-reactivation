@@ -1,0 +1,13 @@
+{
+  "request_id": "req-whatsapp-001",
+  "data": {
+    "status": "sent",
+    "partner_id": 1001,
+    "company_id": 1,
+    "http_status": 200,
+    "conversation_id": 42,
+    "message_id": 99,
+    "retryable": false,
+    "error": null
+  }
+}

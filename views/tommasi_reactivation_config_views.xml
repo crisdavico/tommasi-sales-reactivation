@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="tommasi_reactivation_config_view_form" model="ir.ui.view">
+        <field name="name">tommasi.reactivation.config.form</field>
+        <field name="model">tommasi.reactivation.config</field>
+        <field name="arch" type="xml">
+            <form string="Sales reactivation">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only" />
+                        <h1>
+                            <field name="name" placeholder="Sales reactivation" />
+                        </h1>
+                    </div>
+                    <group string="Operational parameters">
+                        <group>
+                            <field name="company_id" readonly="1" />
+                            <field
+                                name="currency_id"
+                                groups="base.group_multi_currency"
+                            />
+                            <field name="active" />
+                            <field name="cooldown_days" />
+                            <field name="opportunity_cap_per_seller" />
+                            <field name="low_stock_threshold" />
+                            <field
+                                name="stock_location_ids"
+                                widget="many2many_tags"
+                                options="{'no_create': True}"
+                            />
+                            <field name="reminder_stale_days" />
+                            <field name="pending_review_archive_days" />
+                        </group>
+                        <group>
+                            <field name="inactivity_days_primary" />
+                            <field name="inactivity_days_secondary" />
+                            <field name="suggested_products_max" />
+                            <field name="discount_pct" invisible="1" />
+                            <field name="min_confidence_threshold" />
+                            <field name="bootstrap_min_invoices" />
+                            <field name="bootstrap_invoice_window_days" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Enabled sellers" name="sellers">
+                            <field
+                                name="seller_user_ids"
+                                widget="many2many"
+                                options="{'no_create': True}"
+                            >
+                                <tree>
+                                    <field name="name" />
+                                    <field name="login" />
+                                    <field name="mobile" />
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Priority rules" name="priority_rules">
+                            <field name="priority_rule_ids">
+                                <tree editable="bottom">
+                                    <field name="label" />
+                                    <field name="min_confidence" />
+                                    <field name="min_inactivity_days" />
+                                    <field name="min_decline_pct" />
+                                    <field name="min_customer_value" />
+                                    <field name="multi_trigger_weight" />
+                                    <field name="cap_order" />
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" />
+                    <field name="activity_ids" />
+                    <field name="message_ids" />
+                </div>
+            </form>
+        </field>
+    </record>
+</odoo>

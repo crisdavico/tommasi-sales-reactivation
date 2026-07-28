@@ -1,0 +1,44 @@
+{
+  "request_id": "req-recommendations-001",
+  "data": {
+    "seller_id": 81,
+    "results": {
+      "1001": {
+        "customer_id": 1001,
+        "recommendations": [
+          {
+            "product_id": 550,
+            "sku": "ACE-001",
+            "name": "Aceite girasol 900ml",
+            "reason_tier": "dropoff",
+            "available_qty": 42.0,
+            "list_price": 1000.0,
+            "pricelist_discount_pct": 6.25,
+            "currency": "ARS",
+            "tax_included": false,
+            "low_stock": false,
+            "habitual_units": 12.0,
+            "potential_net_margin": 400.0,
+            "opportunity_score": 4800.0
+          }
+        ],
+        "customer_ranking": {
+          "total_opportunity_score": 4800.0,
+          "max_opportunity_score": 4800.0,
+          "products_count": 1,
+          "currency": "ARS"
+        }
+      },
+      "1002": {
+        "customer_id": 1002,
+        "recommendations": [],
+        "customer_ranking": {
+          "total_opportunity_score": 0.0,
+          "max_opportunity_score": null,
+          "products_count": 0,
+          "currency": "ARS"
+        }
+      }
+    }
+  }
+}

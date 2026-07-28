@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record id="stage_pendiente_revision" model="crm.stage">
+        <field name="name">Pendiente de revisión</field>
+        <field name="sequence">10</field>
+    </record>
+
+    <record id="stage_cliente_contactado" model="crm.stage">
+        <field name="name">Cliente contactado</field>
+        <field name="sequence">20</field>
+    </record>
+</odoo>

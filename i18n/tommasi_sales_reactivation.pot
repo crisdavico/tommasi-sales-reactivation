@@ -1,0 +1,1235 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* tommasi_sales_reactivation
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-14 20:16+0000\n"
+"PO-Revision-Date: 2026-07-14 20:16+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: tommasi_sales_reactivation
+#: model:res.groups,comment:tommasi_sales_reactivation.group_reactivation_agent
+msgid ""
+"\n"
+"            Technical user group for MCP reactivation agents. Tools must pass\n"
+"            reactivation_seller_id in the environment context. When this group\n"
+"            is assigned, seller-scoped models ignore other group record rules.\n"
+"        "
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__active
+msgid "Active"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__activity_ids
+msgid "Activities"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__activity_state
+msgid "Activity State"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__activity_type_icon
+msgid "Activity Type Icon"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_crm_lead__reactivation_confidence
+msgid ""
+"Agent confidence score from 0 to 1 that this customer is worth reactivating."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.crm_lead_view_form_reactivation
+msgid "Agent metadata"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_crm_lead__reactivation_is_agent
+msgid "Agent reactivation"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__bootstrap_invoice_window_days
+msgid "Bootstrap Invoice Window Days"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__bootstrap_min_invoices
+msgid "Bootstrap Min Invoices"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: code:addons/tommasi_sales_reactivation/models/tommasi_reactivation_config.py:0
+#, python-format
+msgid "Bootstrap invoice window days must be at least 1."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: code:addons/tommasi_sales_reactivation/models/tommasi_reactivation_config.py:0
+#, python-format
+msgid "Bootstrap minimum invoices cannot be negative."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_priority_rule__cap_order
+msgid "Cap Order"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_crm_lead__reactivation_is_agent
+msgid ""
+"Checked when this opportunity was created by the sales reactivation agent."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.crm_lead_view_form_reactivation
+msgid "Client message"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:crm.stage,name:tommasi_sales_reactivation.stage_cliente_contactado
+msgid "Cliente contactado"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__partner_id
+msgid "Commercial partner"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__partner_id
+msgid "Commercial partner whose invoice facts are materialized."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__company_id
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__company_id
+#: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.tommasi_reactivation_facts_snapshot_view_search
+msgid "Company"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__company_id
+msgid "Company scope for this snapshot row."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__company_id
+msgid "Company these reactivation settings apply to."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__computed_at
+msgid "Computed At"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__config_hash
+msgid "Config Hash"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_priority_rule__config_id
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_seller__config_id
+msgid "Configuration"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.crm_lead_view_form_reactivation
+msgid "Contact audit"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_seller__partner_id
+msgid "Contact record linked to the salesperson."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__cooldown_days
+msgid "Cooldown Days"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: code:addons/tommasi_sales_reactivation/models/tommasi_reactivation_config.py:0
+#, python-format
+msgid "Cooldown days cannot be negative."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__create_uid
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__create_uid
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_priority_rule__create_uid
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_seller__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__create_date
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__create_date
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_priority_rule__create_date
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_seller__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__currency_id
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_priority_rule__currency_id
+msgid "Currency"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__currency_id
+msgid "Currency used for customer value thresholds in priority rules."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_priority_rule__currency_id
+msgid "Currency used for the minimum customer value."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__date_from
+msgid "Date From"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__date_to
+msgid "Date To"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_crm_lead__reactivation_contacted_at
+msgid "Date and time when the opportunity moved to Customer contacted."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__last_purchase_date
+msgid "Date of the most recent posted customer invoice."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__days_inactive
+msgid "Days Inactive"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__reminder_stale_days
+msgid ""
+"Days an opportunity can stay in Pending review before the agent sends a "
+"reminder to the seller."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__days_inactive
+msgid ""
+"Days since the last purchase, computed at read time from last_purchase_date "
+"and never stored."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__inactivity_days_primary
+msgid ""
+"Days without a purchase after which a customer may be flagged for the "
+"standard inactivity trigger."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__inactivity_days_secondary
+msgid ""
+"Days without a purchase for the stronger inactivity trigger. Must be equal "
+"to or greater than the primary inactivity days."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model,name:tommasi_sales_reactivation.model_tommasi_reactivation_demo
+msgid "Demo transaction loader for sales reactivation MCP tools"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__discount_pct
+msgid ""
+"Deprecated — no longer used for pricing. Net prices come from the customer "
+"pricelist; pricelist line discounts are shown as commercial reference only."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.tommasi_reactivation_facts_snapshot_view_form
+msgid "Detection window metrics"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__discount_pct
+msgid "Discount Pct"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: code:addons/tommasi_sales_reactivation/models/tommasi_reactivation_config.py:0
+#, python-format
+msgid "Discount percentage must be between 0 and 100."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__display_name
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__display_name
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_priority_rule__display_name
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_seller__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__name
+msgid "Display name for this reactivation settings record."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: code:addons/tommasi_sales_reactivation/models/tommasi_reactivation_seller.py:0
+#: model:ir.model.constraint,message:tommasi_sales_reactivation.constraint_tommasi_reactivation_seller_unique_user_per_config
+#, python-format
+msgid "Each salesperson can only appear once in the configuration."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model,name:tommasi_sales_reactivation.model_tommasi_reactivation_seller
+msgid "Enabled seller for sales reactivation"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__seller_user_ids
+#: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.tommasi_reactivation_config_view_form
+msgid "Enabled sellers"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__date_to
+msgid "End date of the detection window used for this snapshot."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_priority_rule__multi_trigger_weight
+msgid ""
+"Extra weight when more than one reactivation trigger applies to the same "
+"customer."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.tommasi_reactivation_facts_snapshot_view_form
+msgid "Facts snapshot"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.actions.act_window,name:tommasi_sales_reactivation.action_tommasi_reactivation_facts_snapshot
+#: model:ir.ui.menu,name:tommasi_sales_reactivation.menu_tommasi_reactivation_facts_snapshot
+#: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.tommasi_reactivation_facts_snapshot_view_search
+#: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.tommasi_reactivation_facts_snapshot_view_tree
+msgid "Facts snapshots"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.tommasi_reactivation_facts_snapshot_view_search
+msgid "Fresh (< 24h)"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.tommasi_reactivation_facts_snapshot_view_form
+msgid "Freshness"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.tommasi_reactivation_facts_snapshot_view_search
+msgid "Group by"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__config_hash
+msgid ""
+"Hash of bootstrap and inactivity config fields used to detect configuration "
+"drift."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields.selection,name:tommasi_sales_reactivation.selection__tommasi_reactivation_priority_rule__label__high
+msgid "High"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_crm_lead__reactivation_source
+msgid "How this reactivation opportunity was created."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__id
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__id
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_priority_rule__id
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_seller__id
+msgid "ID"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__activity_exception_icon
+msgid "Icon"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_crm_lead__reactivation_cycle_id
+msgid "Identifier of the detection run that created this opportunity."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__message_needaction
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__message_unread
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__message_has_error
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields.selection,name:tommasi_sales_reactivation.selection__crm_lead__reactivation_trigger_type__inactivity
+msgid "Inactivity"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__inactivity_days_primary
+msgid "Inactivity Days Primary"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__inactivity_days_secondary
+msgid "Inactivity Days Secondary"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__stock_location_ids
+msgid ""
+"Internal locations used to compute available stock for recommendations and "
+"opportunity validation. Leave empty to use all internal locations for this "
+"company."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__revenue_prior
+msgid "Invoice revenue in the prior half of the detection window."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__revenue_recent
+msgid "Invoice revenue in the recent half of the detection window."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_priority_rule__label
+msgid "Label"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config____last_update
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot____last_update
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_priority_rule____last_update
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_seller____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__last_purchase_date
+msgid "Last Purchase Date"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__write_uid
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__write_uid
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_priority_rule__write_uid
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_seller__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__write_date
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__write_date
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_priority_rule__write_date
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_seller__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.tommasi_reactivation_facts_snapshot_view_search
+msgid "Last purchase"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model,name:tommasi_sales_reactivation.model_crm_lead
+msgid "Lead/Opportunity"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__bootstrap_invoice_window_days
+msgid "Lookback window in days for the bootstrap minimum-invoice filter."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields.selection,name:tommasi_sales_reactivation.selection__tommasi_reactivation_priority_rule__label__low
+msgid "Low"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__low_stock_threshold
+msgid "Low Stock Threshold"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: code:addons/tommasi_sales_reactivation/models/tommasi_reactivation_config.py:0
+#, python-format
+msgid "Low stock threshold cannot be negative."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__message_main_attachment_id
+msgid "Main Attachment"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_crm_lead__reactivation_trigger_type
+msgid ""
+"Main reason the customer was flagged, such as inactivity or a drop in sales."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__suggested_products_max
+msgid "Maximum number of products suggested in each reactivation opportunity."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__opportunity_cap_per_seller
+msgid ""
+"Maximum open reactivation opportunities each seller can have at the same "
+"time. Extra candidates are skipped."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: code:addons/tommasi_sales_reactivation/models/tommasi_reactivation_config.py:0
+#, python-format
+msgid "Maximum suggested products must be at least 1."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields.selection,name:tommasi_sales_reactivation.selection__tommasi_reactivation_priority_rule__label__medium
+msgid "Medium"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_priority_rule__min_confidence
+msgid "Min Confidence"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__min_confidence_threshold
+msgid "Min Confidence Threshold"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_priority_rule__min_customer_value
+msgid "Min Customer Value"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_priority_rule__min_decline_pct
+msgid "Min Decline Pct"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_priority_rule__min_inactivity_days
+msgid "Min Inactivity Days"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_priority_rule__min_confidence
+msgid ""
+"Minimum confidence score (from 0 to 1) required for this priority level."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__min_confidence_threshold
+msgid ""
+"Minimum confidence score (from 0 to 1). Customers below this score are not "
+"turned into opportunities."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: code:addons/tommasi_sales_reactivation/models/tommasi_reactivation_config.py:0
+#, python-format
+msgid "Minimum confidence threshold must be between 0 and 1."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_priority_rule__min_customer_value
+msgid "Minimum customer lifetime value required for this priority level."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_priority_rule__min_inactivity_days
+msgid ""
+"Minimum days since the customer's last purchase to qualify for this "
+"priority."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__cooldown_days
+msgid ""
+"Minimum days to wait before the agent can create another reactivation "
+"opportunity for the same customer."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__bootstrap_min_invoices
+msgid ""
+"Minimum number of posted customer invoices required in the bootstrap invoice"
+" window for a partner to enter the detection cycle. Set to 0 to disable this"
+" filter."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_priority_rule__min_decline_pct
+msgid ""
+"Minimum revenue decline percentage, compared to the baseline period, to "
+"qualify for this priority."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__low_stock_threshold
+msgid ""
+"Minimum stock required to suggest a product. Products with available "
+"quantity at or below this number are excluded from recommendations and "
+"rejected at opportunity creation."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_res_users__mobile
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_seller__mobile
+msgid "Mobile"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_seller__mobile
+msgid "Mobile phone from the salesperson's contact record."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_priority_rule__multi_trigger_weight
+msgid "Multi Trigger Weight"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: code:addons/tommasi_sales_reactivation/models/tommasi_reactivation_config.py:0
+#, python-format
+msgid "Multiple sales reactivation configurations found for company %s."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields.selection,name:tommasi_sales_reactivation.selection__crm_lead__reactivation_trigger_type__multi
+msgid "Multiple triggers"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__name
+msgid "Name"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__activity_summary
+msgid "Next Activity Summary"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__activity_type_id
+msgid "Next Activity Type"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model_terms:ir.actions.act_window,help:tommasi_sales_reactivation.action_tommasi_reactivation_facts_snapshot
+msgid ""
+"Nightly cron materializes invoice aggregates for bootstrap-qualified\n"
+"                customers. Use <strong>Action → Refresh facts snapshots</strong> to\n"
+"                run the refresh manually."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model_terms:ir.actions.act_window,help:tommasi_sales_reactivation.action_tommasi_reactivation_facts_snapshot
+msgid "No facts snapshots yet."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_seller__notes
+msgid "Notes"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__message_needaction_counter
+msgid "Number of messages which requires an action"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__message_unread_counter
+msgid "Number of unread messages"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.constraint,message:tommasi_sales_reactivation.constraint_tommasi_reactivation_facts_snapshot_unique_partner_per_company
+msgid "Only one facts snapshot is allowed per commercial partner and company."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.constraint,message:tommasi_sales_reactivation.constraint_tommasi_reactivation_priority_rule_unique_label_per_config
+msgid "Only one priority rule per label is allowed per configuration."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.constraint,message:tommasi_sales_reactivation.constraint_tommasi_reactivation_config_unique_company_config
+msgid "Only one sales reactivation configuration is allowed per company."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: code:addons/tommasi_sales_reactivation/models/tommasi_reactivation_config.py:0
+#: code:addons/tommasi_sales_reactivation/models/tommasi_reactivation_config.py:0
+#, python-format
+msgid ""
+"Only one sales reactivation configuration record is allowed per company."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.tommasi_reactivation_config_view_form
+msgid "Operational parameters"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__opportunity_cap_per_seller
+msgid "Opportunity Cap Per Seller"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: code:addons/tommasi_sales_reactivation/models/tommasi_reactivation_config.py:0
+#, python-format
+msgid "Opportunity cap per seller must be at least 1."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_seller__notes
+msgid "Optional internal notes about this seller's participation."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_seller__partner_id
+#: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.tommasi_reactivation_facts_snapshot_view_form
+msgid "Partner"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:crm.stage,name:tommasi_sales_reactivation.stage_pendiente_revision
+msgid "Pendiente de revisión"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__seller_ids
+msgid "Per-seller settings linked to the enabled salespeople above."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__qty_change_pct
+msgid "Percentage change of quantity between prior and recent halves."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__revenue_change_pct
+msgid "Percentage change of revenue between prior and recent halves."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model,name:tommasi_sales_reactivation.model_tommasi_reactivation_facts_snapshot
+msgid "Pre-computed sales reactivation facts snapshot"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: code:addons/tommasi_sales_reactivation/models/tommasi_reactivation_config.py:0
+#, python-format
+msgid "Primary inactivity days cannot be negative."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_priority_rule__label
+msgid ""
+"Priority label assigned when a customer meets the thresholds in this row."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__priority_rule_ids
+#: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.tommasi_reactivation_config_view_form
+msgid "Priority rules"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__product_history_json
+msgid "Product History Json"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.tommasi_reactivation_facts_snapshot_view_form
+msgid "Product history"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields.selection,name:tommasi_sales_reactivation.selection__crm_lead__reactivation_trigger_type__dropoff
+msgid "Purchase drop-off"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__qty_change_pct
+msgid "Qty Change Pct"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_priority_rule__cap_order
+msgid ""
+"Ranking used when a seller hits the opportunity cap. Lower numbers are kept "
+"first; higher numbers are dropped first."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.crm_lead_view_form_reactivation
+msgid "Reactivation"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:res.groups,name:tommasi_sales_reactivation.group_reactivation_agent
+msgid "Reactivation Agent"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_crm_lead__reactivation_attribution_id
+msgid "Reactivation attribution ID"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.constraint,message:tommasi_sales_reactivation.constraint_crm_lead_unique_reactivation_attribution_id
+msgid "Reactivation attribution ID must be unique."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: code:addons/tommasi_sales_reactivation/models/service_create_guards.py:0
+#, python-format
+msgid "Reactivation attribution sequence is not configured."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_crm_lead__reactivation_client_message
+msgid "Reactivation client message"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_crm_lead__reactivation_confidence
+msgid "Reactivation confidence"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_crm_lead__reactivation_contacted_at
+msgid "Reactivation contacted at"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_crm_lead__reactivation_cycle_id
+msgid "Reactivation cycle ID"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_crm_lead__reactivation_operation_key
+msgid "Reactivation operation key"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.constraint,message:tommasi_sales_reactivation.constraint_crm_lead_unique_reactivation_operation_key
+msgid "Reactivation operation key must be unique."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model,name:tommasi_sales_reactivation.model_tommasi_reactivation_priority_rule
+msgid "Reactivation priority threshold rule"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_priority_rule__config_id
+msgid "Reactivation settings this priority rule belongs to."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_seller__config_id
+msgid "Reactivation settings this seller line belongs to."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_crm_lead__reactivation_source
+msgid "Reactivation source"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: code:addons/tommasi_sales_reactivation/models/service_create_guards.py:0
+#, python-format
+msgid "Reactivation stage Pendiente de revisión is not configured."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_crm_lead__reactivation_trigger_type
+msgid "Reactivation trigger type"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_crm_lead__reactivation_client_message
+msgid ""
+"Ready-to-send message for the customer, generated by the agent. The seller "
+"can copy or forward it."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model,name:tommasi_sales_reactivation.model_ir_rule
+msgid "Record Rule"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.actions.server,name:tommasi_sales_reactivation.action_refresh_facts_snapshots_server
+msgid "Refresh facts snapshots"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__reminder_stale_days
+msgid "Reminder Stale Days"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: code:addons/tommasi_sales_reactivation/models/tommasi_reactivation_config.py:0
+#, python-format
+msgid "Reminder stale days cannot be negative."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__activity_user_id
+msgid "Responsible User"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__revenue_prior
+msgid "Revenue Prior"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__revenue_recent
+msgid "Revenue Recent"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__revenue_change_pct
+msgid "Revenue change (%)"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields.selection,name:tommasi_sales_reactivation.selection__crm_lead__reactivation_trigger_type__revenue_decline
+#: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.tommasi_reactivation_facts_snapshot_view_search
+msgid "Revenue decline"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__sales_history_json
+msgid "Sales History Json"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.tommasi_reactivation_facts_snapshot_view_form
+msgid "Sales history"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.actions.act_window,name:tommasi_sales_reactivation.action_tommasi_reactivation_config
+#: model:ir.ui.menu,name:tommasi_sales_reactivation.menu_tommasi_reactivation_config
+#: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.tommasi_reactivation_config_view_form
+msgid "Sales reactivation"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model,name:tommasi_sales_reactivation.model_tommasi_reactivation_service
+msgid "Sales reactivation MCP tools and internal helpers"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__seller_user_ids
+msgid ""
+"Salespeople included in the reactivation agent. Use Add a line to select one"
+" or more salespeople at once."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__seller_id
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_seller__user_id
+#: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.tommasi_reactivation_facts_snapshot_view_search
+msgid "Salesperson"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_seller__user_id
+msgid ""
+"Salesperson included in the reactivation agent. Their customers are "
+"evaluated in each detection cycle."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__seller_id
+msgid "Salesperson who owns the commercial partner."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: code:addons/tommasi_sales_reactivation/models/tommasi_reactivation_config.py:0
+#, python-format
+msgid ""
+"Secondary inactivity days must be greater than or equal to primary "
+"inactivity days."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__seller_ids
+msgid "Seller details"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__product_history_json
+msgid "Serialized product history payload (json.dumps)."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__sales_history_json
+msgid "Serialized sales history payload (json.dumps)."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_crm_lead__reactivation_operation_key
+msgid ""
+"Stable idempotency key for agent-created opportunities (cycle + seller + "
+"customer)."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__date_from
+msgid "Start date of the detection window used for this snapshot."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__stock_location_ids
+msgid "Stock source locations"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: code:addons/tommasi_sales_reactivation/models/tommasi_reactivation_config.py:0
+#, python-format
+msgid "Stock source locations must be internal or view locations."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: code:addons/tommasi_sales_reactivation/models/tommasi_reactivation_config.py:0
+#, python-format
+msgid ""
+"Stock source locations must belong to the same company as the configuration."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__suggested_products_max
+msgid "Suggested Products Max"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__priority_rule_ids
+msgid ""
+"Thresholds the agent uses to assign High, Medium, or Low priority to each "
+"opportunity."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.actions.server,name:tommasi_sales_reactivation.ir_cron_refresh_facts_snapshots_ir_actions_server
+#: model:ir.cron,cron_name:tommasi_sales_reactivation.ir_cron_refresh_facts_snapshots
+#: model:ir.cron,name:tommasi_sales_reactivation.ir_cron_refresh_facts_snapshots
+msgid "Tommasi Reactivation: Refresh Facts Snapshots"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model,name:tommasi_sales_reactivation.model_tommasi_reactivation_config
+msgid "Tommasi sales reactivation configuration"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__computed_at
+msgid "UTC timestamp when this snapshot row was last materialized."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields.selection,name:tommasi_sales_reactivation.selection__crm_lead__reactivation_trigger_type__undelivered_so_lines
+msgid "Undelivered sales orders"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_crm_lead__reactivation_attribution_id
+msgid ""
+"Unique reference assigned to each agent-created reactivation opportunity."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__message_unread
+msgid "Unread Messages"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__message_unread_counter
+msgid "Unread Messages Counter"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model,name:tommasi_sales_reactivation.model_res_users
+msgid "Users"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields.selection,name:tommasi_sales_reactivation.selection__crm_lead__reactivation_trigger_type__volume_decline_with_stock
+msgid "Volume decline with stock"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__website_message_ids
+msgid "Website communication history"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__active
+msgid "When unchecked, the reactivation agent stops using these settings."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: code:addons/tommasi_sales_reactivation/models/tommasi_reactivation_config.py:0
+#, python-format
+msgid "You cannot delete the sales reactivation configuration."
+msgstr ""

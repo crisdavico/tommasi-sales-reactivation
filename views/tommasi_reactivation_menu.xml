@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="action_tommasi_reactivation_config" model="ir.actions.act_window">
+        <field name="name">Sales reactivation</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tommasi.reactivation.config</field>
+        <field name="view_mode">form</field>
+        <field name="res_id" ref="reactivation_config_singleton" />
+        <field name="target">current</field>
+        <field name="context">{'create': False}</field>
+    </record>
+
+    <menuitem
+        id="menu_tommasi_reactivation_config"
+        name="Sales reactivation"
+        parent="llm.menu_llm_config"
+        action="action_tommasi_reactivation_config"
+        sequence="49"
+        groups="llm.group_llm_manager"
+    />
+
+    <menuitem
+        id="menu_tommasi_reactivation_facts_snapshot"
+        name="Facts snapshots"
+        parent="llm.menu_llm_config"
+        action="action_tommasi_reactivation_facts_snapshot"
+        sequence="50"
+        groups="llm.group_llm_manager"
+    />
+</odoo>

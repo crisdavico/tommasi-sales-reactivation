@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="crm_lead_view_form_reactivation" model="ir.ui.view">
+        <field name="name">crm.lead.form.reactivation</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form" />
+        <field name="arch" type="xml">
+            <field name="active" position="after">
+                <field name="reactivation_is_agent" invisible="1" />
+            </field>
+            <xpath expr="//notebook" position="inside">
+                <page
+                    string="Reactivation"
+                    name="reactivation"
+                    attrs="{'invisible': [('reactivation_is_agent', '=', False)]}"
+                >
+                    <group>
+                        <group string="Agent metadata">
+                            <field name="reactivation_source" readonly="1" />
+                            <field name="reactivation_attribution_id" readonly="1" />
+                            <field name="reactivation_trigger_type" readonly="1" />
+                            <field name="reactivation_confidence" readonly="1" />
+                            <field name="reactivation_cycle_id" readonly="1" />
+                            <field name="reactivation_operation_key" readonly="1" />
+                        </group>
+                        <group string="Contact audit">
+                            <field name="reactivation_contacted_at" readonly="1" />
+                        </group>
+                    </group>
+                    <group string="Client message">
+                        <field
+                            name="reactivation_client_message"
+                            readonly="1"
+                            nolabel="1"
+                            widget="text"
+                        />
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="crm_lead_view_tree_reactivation" model="ir.ui.view">
+        <field name="name">crm.lead.tree.reactivation</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_tree_view_oppor" />
+        <field name="arch" type="xml">
+            <field name="user_id" position="after">
+                <field name="reactivation_is_agent" optional="hide" />
+                <field name="reactivation_trigger_type" optional="hide" />
+                <field name="reactivation_confidence" optional="hide" />
+                <field name="reactivation_attribution_id" optional="hide" />
+            </field>
+        </field>
+    </record>
+</odoo>

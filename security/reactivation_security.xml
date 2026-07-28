@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="group_reactivation_agent" model="res.groups">
+        <field name="name">Reactivation Agent</field>
+        <field name="category_id" ref="llm.module_category_llm" />
+        <field name="comment">
+            Technical user group for MCP reactivation agents. Tools must pass
+            reactivation_seller_id in the environment context. When this group
+            is assigned, seller-scoped models ignore other group record rules.
+        </field>
+    </record>
+
+    <record id="reactivation_config_company_rule" model="ir.rule">
+        <field name="name">Reactivation config: multi-company</field>
+        <field name="model_id" ref="model_tommasi_reactivation_config" />
+        <field name="global" eval="True" />
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="whatsapp_config_company_rule" model="ir.rule">
+        <field name="name">WhatsApp config: multi-company</field>
+        <field name="model_id" ref="model_tommasi_whatsapp_config" />
+        <field name="global" eval="True" />
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="whatsapp_log_company_rule" model="ir.rule">
+        <field name="name">WhatsApp log: multi-company</field>
+        <field name="model_id" ref="model_tommasi_whatsapp_log" />
+        <field name="global" eval="True" />
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <!-- res.partner: agent may only read customers owned by the context seller -->
+    <record id="reactivation_partner_agent_rule" model="ir.rule">
+        <field name="name">Reactivation agent: seller-scoped customers</field>
+        <field name="model_id" ref="base.model_res_partner" />
+        <field
+            name="domain_force"
+        >['|', ('user_id', '=', reactivation_seller_id), ('id', '=', reactivation_seller_partner_id)]</field>
+        <field name="groups" eval="[(4, ref('group_reactivation_agent'))]" />
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="False" />
+        <field name="perm_create" eval="False" />
+        <field name="perm_unlink" eval="False" />
+    </record>
+
+    <!-- crm.lead: agent may only read/write opportunities for the context seller -->
+    <record id="reactivation_lead_agent_rule" model="ir.rule">
+        <field name="name">Reactivation agent: seller-scoped opportunities</field>
+        <field name="model_id" ref="crm.model_crm_lead" />
+        <field name="domain_force">[('user_id', '=', reactivation_seller_id)]</field>
+        <field name="groups" eval="[(4, ref('group_reactivation_agent'))]" />
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="True" />
+        <field name="perm_create" eval="True" />
+        <field name="perm_unlink" eval="False" />
+    </record>
+
+    <!-- sale.order: agent may only read orders for owned customers -->
+    <record id="reactivation_sale_order_agent_rule" model="ir.rule">
+        <field name="name">Reactivation agent: seller-scoped sale orders</field>
+        <field name="model_id" ref="sale.model_sale_order" />
+        <field
+            name="domain_force"
+        >[('partner_id.user_id', '=', reactivation_seller_id)]</field>
+        <field name="groups" eval="[(4, ref('group_reactivation_agent'))]" />
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="False" />
+        <field name="perm_create" eval="False" />
+        <field name="perm_unlink" eval="False" />
+    </record>
+
+    <!-- account.move: agent may only read invoices for owned customers -->
+    <record id="reactivation_account_move_agent_rule" model="ir.rule">
+        <field name="name">Reactivation agent: seller-scoped invoices</field>
+        <field name="model_id" ref="account.model_account_move" />
+        <field
+            name="domain_force"
+        >[('partner_id.user_id', '=', reactivation_seller_id)]</field>
+        <field name="groups" eval="[(4, ref('group_reactivation_agent'))]" />
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="False" />
+        <field name="perm_create" eval="False" />
+        <field name="perm_unlink" eval="False" />
+    </record>
+</odoo>

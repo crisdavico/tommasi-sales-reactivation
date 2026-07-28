@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record id="demo_stock_quant_dropoff" model="stock.quant">
+        <field name="product_id" ref="tommasi_sales_reactivation.demo_prod_dropoff" />
+        <field name="inventory_quantity">30.0</field>
+        <field name="location_id" ref="stock.stock_location_stock" />
+    </record>
+
+    <record id="demo_stock_quant_related_opt" model="stock.quant">
+        <field name="product_id" ref="tommasi_sales_reactivation.demo_prod_related_opt" />
+        <field name="inventory_quantity">25.0</field>
+        <field name="location_id" ref="stock.stock_location_stock" />
+    </record>
+
+    <record id="demo_stock_quant_related_acc" model="stock.quant">
+        <field name="product_id" ref="tommasi_sales_reactivation.demo_prod_related_acc" />
+        <field name="inventory_quantity">15.0</field>
+        <field name="location_id" ref="stock.stock_location_stock" />
+    </record>
+
+    <record id="demo_stock_quant_same_cat" model="stock.quant">
+        <field name="product_id" ref="tommasi_sales_reactivation.demo_prod_same_cat" />
+        <field name="inventory_quantity">40.0</field>
+        <field name="location_id" ref="stock.stock_location_stock" />
+    </record>
+
+    <record id="demo_stock_quant_similar_only" model="stock.quant">
+        <field name="product_id" ref="tommasi_sales_reactivation.demo_prod_similar_only" />
+        <field name="inventory_quantity">20.0</field>
+        <field name="location_id" ref="stock.stock_location_stock" />
+    </record>
+
+    <record id="demo_stock_quant_overstock" model="stock.quant">
+        <field name="product_id" ref="tommasi_sales_reactivation.demo_prod_overstock" />
+        <field name="inventory_quantity">50.0</field>
+        <field name="location_id" ref="stock.stock_location_stock" />
+    </record>
+
+    <record id="demo_stock_quant_low_stock" model="stock.quant">
+        <field name="product_id" ref="tommasi_sales_reactivation.demo_prod_low_stock" />
+        <field name="inventory_quantity">3.0</field>
+        <field name="location_id" ref="stock.stock_location_stock" />
+    </record>
+
+    <record id="demo_stock_quant_in_stock" model="stock.quant">
+        <field name="product_id" ref="tommasi_sales_reactivation.demo_prod_in_stock" />
+        <field name="inventory_quantity">10.0</field>
+        <field name="location_id" ref="stock.stock_location_stock" />
+    </record>
+
+    <record id="demo_stock_quant_no_stock" model="stock.quant">
+        <field name="product_id" ref="tommasi_sales_reactivation.demo_prod_no_stock" />
+        <field name="inventory_quantity">0.0</field>
+        <field name="location_id" ref="stock.stock_location_stock" />
+    </record>
+
+    <record id="demo_stock_quant_undelivered" model="stock.quant">
+        <field name="product_id" ref="tommasi_sales_reactivation.demo_prod_undelivered" />
+        <field name="inventory_quantity">13.0</field>
+        <field name="location_id" ref="stock.stock_location_stock" />
+    </record>
+
+    <record id="demo_stock_quant_volume_decline" model="stock.quant">
+        <field name="product_id" ref="tommasi_sales_reactivation.demo_prod_volume_decline" />
+        <field name="inventory_quantity">35.0</field>
+        <field name="location_id" ref="stock.stock_location_stock" />
+    </record>
+
+    <function model="stock.quant" name="action_apply_inventory">
+        <function
+            eval="[[('id', 'in', (ref('demo_stock_quant_dropoff'),
+                                  ref('demo_stock_quant_related_opt'),
+                                  ref('demo_stock_quant_related_acc'),
+                                  ref('demo_stock_quant_same_cat'),
+                                  ref('demo_stock_quant_similar_only'),
+                                  ref('demo_stock_quant_overstock'),
+                                  ref('demo_stock_quant_low_stock'),
+                                  ref('demo_stock_quant_in_stock'),
+                                  ref('demo_stock_quant_no_stock'),
+                                  ref('demo_stock_quant_undelivered'),
+                                  ref('demo_stock_quant_volume_decline'),
+                                  ))]]"
+            model="stock.quant"
+            name="search"
+        />
+    </function>
+</odoo>

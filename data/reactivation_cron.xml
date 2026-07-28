@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="ir_cron_refresh_facts_snapshots" model="ir.cron">
+        <field name="name">Tommasi Reactivation: Refresh Facts Snapshots</field>
+        <field name="model_id" ref="model_tommasi_reactivation_facts_snapshot"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_refresh_facts_snapshots()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="active">True</field>
+        <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).replace(hour=2, minute=0, second=0)"/>
+    </record>
+
+    <record id="ir_cron_archive_stale_pendiente_revision" model="ir.cron">
+        <field name="name">Tommasi Reactivation: Archive Stale Pending Review Leads</field>
+        <field name="model_id" ref="crm.model_crm_lead"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_archive_stale_pendiente_revision()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="active">True</field>
+        <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).replace(hour=3, minute=0, second=0)"/>
+    </record>
+</odoo>

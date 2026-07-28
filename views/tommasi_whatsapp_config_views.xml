@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="tommasi_whatsapp_config_view_tree" model="ir.ui.view">
+        <field name="name">tommasi.whatsapp.config.tree</field>
+        <field name="model">tommasi.whatsapp.config</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="company_id" />
+                <field name="name" />
+                <field name="router_base_url" />
+                <field name="chatwoot_account_id" />
+                <field name="chatwoot_inbox_id" />
+                <field name="active" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="tommasi_whatsapp_config_view_form" model="ir.ui.view">
+        <field name="name">tommasi.whatsapp.config.form</field>
+        <field name="model">tommasi.whatsapp.config</field>
+        <field name="arch" type="xml">
+            <form string="WhatsApp outbound">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only" />
+                        <h1>
+                            <field name="name" placeholder="WhatsApp outbound" />
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="company_id" />
+                            <field name="active" />
+                            <field name="router_base_url" />
+                            <field
+                                name="outbound_api_key"
+                                password="True"
+                                attrs="{'required': [('id', '!=', False)]}"
+                            />
+                        </group>
+                        <group>
+                            <field name="chatwoot_account_id" />
+                            <field name="chatwoot_inbox_id" />
+                            <field name="http_timeout_seconds" />
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" />
+                    <field name="activity_ids" />
+                    <field name="message_ids" />
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_tommasi_whatsapp_config" model="ir.actions.act_window">
+        <field name="name">WhatsApp</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tommasi.whatsapp.config</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="tommasi_whatsapp_log_view_tree" model="ir.ui.view">
+        <field name="name">tommasi.whatsapp.log.tree</field>
+        <field name="model">tommasi.whatsapp.log</field>
+        <field name="arch" type="xml">
+            <tree create="false" edit="false" delete="false">
+                <field name="create_date" />
+                <field name="partner_id" />
+                <field name="company_id" />
+                <field name="template_name" />
+                <field name="template_language" />
+                <field name="status" />
+                <field name="http_status" />
+                <field name="retryable" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="tommasi_whatsapp_log_view_form" model="ir.ui.view">
+        <field name="name">tommasi.whatsapp.log.form</field>
+        <field name="model">tommasi.whatsapp.log</field>
+        <field name="arch" type="xml">
+            <form string="WhatsApp send log" create="false" edit="false" delete="false">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="create_date" />
+                            <field name="partner_id" />
+                            <field name="company_id" />
+                            <field name="config_id" />
+                            <field name="template_name" />
+                            <field name="template_language" />
+                            <field name="idempotency_key" />
+                        </group>
+                        <group>
+                            <field name="status" />
+                            <field name="http_status" />
+                            <field name="conversation_id" />
+                            <field name="message_id" />
+                            <field name="retryable" />
+                        </group>
+                    </group>
+                    <group string="Error">
+                        <field name="error_message" nolabel="1" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_tommasi_whatsapp_log" model="ir.actions.act_window">
+        <field name="name">WhatsApp send logs</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tommasi.whatsapp.log</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

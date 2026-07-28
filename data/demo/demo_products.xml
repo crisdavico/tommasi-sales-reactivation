@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record id="demo_cat_aceites" model="product.category">
+        <field name="name">DEMO-CAT-Aceites</field>
+        <field name="parent_id" ref="product.product_category_all" />
+    </record>
+
+    <record id="demo_cat_accesorios" model="product.category">
+        <field name="name">DEMO-CAT-Accesorios</field>
+        <field name="parent_id" ref="product.product_category_all" />
+    </record>
+
+    <record id="demo_prod_related_opt" model="product.product">
+        <field name="name">Accesorio opcional demo</field>
+        <field name="default_code">DEMO-REL-OPT</field>
+        <field name="type">product</field>
+        <field name="sale_ok" eval="True" />
+        <field name="active" eval="True" />
+        <field name="categ_id" ref="tommasi_sales_reactivation.demo_cat_accesorios" />
+        <field name="list_price">15000.0</field>
+        <field name="standard_price">9000.0</field>
+    </record>
+
+    <record id="demo_prod_related_acc" model="product.product">
+        <field name="name">Accesorio atado demo</field>
+        <field name="default_code">DEMO-REL-ACC</field>
+        <field name="type">product</field>
+        <field name="sale_ok" eval="True" />
+        <field name="active" eval="True" />
+        <field name="categ_id" ref="tommasi_sales_reactivation.demo_cat_accesorios" />
+        <field name="list_price">12000.0</field>
+        <field name="standard_price">7000.0</field>
+    </record>
+
+    <record id="demo_prod_dropoff" model="product.product">
+        <field name="name">Aceite demo dropoff</field>
+        <field name="default_code">DEMO-DROP-001</field>
+        <field name="type">product</field>
+        <field name="sale_ok" eval="True" />
+        <field name="active" eval="True" />
+        <field name="categ_id" ref="tommasi_sales_reactivation.demo_cat_aceites" />
+        <field name="list_price">85000.0</field>
+        <field name="standard_price">52000.0</field>
+    </record>
+
+    <record id="demo_prod_same_cat" model="product.product">
+        <field name="name">Aceite demo misma cat.</field>
+        <field name="default_code">DEMO-CAT-001</field>
+        <field name="type">product</field>
+        <field name="sale_ok" eval="True" />
+        <field name="active" eval="True" />
+        <field name="categ_id" ref="tommasi_sales_reactivation.demo_cat_aceites" />
+        <field name="list_price">92000.0</field>
+        <field name="standard_price">56000.0</field>
+    </record>
+
+    <record id="demo_prod_similar_only" model="product.product">
+        <field name="name">Producto solo similar</field>
+        <field name="default_code">DEMO-SIM-001</field>
+        <field name="type">product</field>
+        <field name="sale_ok" eval="True" />
+        <field name="active" eval="True" />
+        <field name="categ_id" ref="tommasi_sales_reactivation.demo_cat_aceites" />
+        <field name="list_price">78000.0</field>
+        <field name="standard_price">47000.0</field>
+    </record>
+
+    <record id="demo_prod_overstock" model="product.product">
+        <field name="name">Producto overstock demo</field>
+        <field name="default_code">DEMO-OVER-001</field>
+        <field name="type">product</field>
+        <field name="sale_ok" eval="True" />
+        <field name="active" eval="True" />
+        <field name="categ_id" ref="tommasi_sales_reactivation.demo_cat_aceites" />
+        <field name="list_price">65000.0</field>
+        <field name="standard_price">40000.0</field>
+    </record>
+
+    <record id="demo_prod_low_stock" model="product.product">
+        <field name="name">Producto stock bajo</field>
+        <field name="default_code">DEMO-LOW-001</field>
+        <field name="type">product</field>
+        <field name="sale_ok" eval="True" />
+        <field name="active" eval="True" />
+        <field name="categ_id" ref="tommasi_sales_reactivation.demo_cat_aceites" />
+        <field name="list_price">72000.0</field>
+        <field name="standard_price">44000.0</field>
+    </record>
+
+    <record id="demo_prod_in_stock" model="product.product">
+        <field name="name">Producto genérico OK</field>
+        <field name="default_code">DEMO-OK-001</field>
+        <field name="type">product</field>
+        <field name="sale_ok" eval="True" />
+        <field name="active" eval="True" />
+        <field name="categ_id" ref="tommasi_sales_reactivation.demo_cat_aceites" />
+        <field name="list_price">80000.0</field>
+        <field name="standard_price">49000.0</field>
+    </record>
+
+    <record id="demo_prod_no_stock" model="product.product">
+        <field name="name">Producto sin stock</field>
+        <field name="default_code">DEMO-NOSTK-001</field>
+        <field name="type">product</field>
+        <field name="sale_ok" eval="True" />
+        <field name="active" eval="True" />
+        <field name="categ_id" ref="tommasi_sales_reactivation.demo_cat_aceites" />
+        <field name="list_price">70000.0</field>
+        <field name="standard_price">43000.0</field>
+    </record>
+
+    <record id="demo_prod_inactive" model="product.product">
+        <field name="name">Producto inactivo</field>
+        <field name="default_code">DEMO-INACT-001</field>
+        <field name="type">product</field>
+        <field name="sale_ok" eval="True" />
+        <field name="active" eval="False" />
+        <field name="categ_id" ref="tommasi_sales_reactivation.demo_cat_aceites" />
+        <field name="list_price">60000.0</field>
+        <field name="standard_price">36000.0</field>
+    </record>
+
+    <record id="demo_prod_service" model="product.product">
+        <field name="name">Servicio demo excluido</field>
+        <field name="default_code">DEMO-SVC-001</field>
+        <field name="type">service</field>
+        <field name="sale_ok" eval="True" />
+        <field name="active" eval="True" />
+        <field name="categ_id" ref="tommasi_sales_reactivation.demo_cat_aceites" />
+        <field name="list_price">25000.0</field>
+        <field name="standard_price">0.0</field>
+    </record>
+
+    <record id="demo_prod_consu" model="product.product">
+        <field name="name">Consumible demo excluido</field>
+        <field name="default_code">DEMO-CONSU-001</field>
+        <field name="type">consu</field>
+        <field name="sale_ok" eval="True" />
+        <field name="active" eval="True" />
+        <field name="categ_id" ref="tommasi_sales_reactivation.demo_cat_aceites" />
+        <field name="list_price">18000.0</field>
+        <field name="standard_price">10000.0</field>
+    </record>
+
+    <record id="demo_prod_not_sale" model="product.product">
+        <field name="name">No vendible</field>
+        <field name="default_code">DEMO-NOSALE-001</field>
+        <field name="type">product</field>
+        <field name="sale_ok" eval="False" />
+        <field name="active" eval="True" />
+        <field name="categ_id" ref="tommasi_sales_reactivation.demo_cat_aceites" />
+        <field name="list_price">55000.0</field>
+        <field name="standard_price">33000.0</field>
+    </record>
+
+    <record id="demo_prod_undelivered" model="product.product">
+        <field name="name">Línea SO pendiente</field>
+        <field name="default_code">DEMO-UNDEL-001</field>
+        <field name="type">product</field>
+        <field name="sale_ok" eval="True" />
+        <field name="active" eval="True" />
+        <field name="categ_id" ref="tommasi_sales_reactivation.demo_cat_aceites" />
+        <field name="list_price">68000.0</field>
+        <field name="standard_price">41000.0</field>
+    </record>
+
+    <record id="demo_prod_volume_decline" model="product.product">
+        <field name="name">Producto volumen demo</field>
+        <field name="default_code">DEMO-VOL-001</field>
+        <field name="type">product</field>
+        <field name="sale_ok" eval="True" />
+        <field name="active" eval="True" />
+        <field name="categ_id" ref="tommasi_sales_reactivation.demo_cat_aceites" />
+        <field name="list_price">90000.0</field>
+        <field name="standard_price">55000.0</field>
+    </record>
+
+    <record id="demo_pricelist" model="product.pricelist">
+        <field name="name">Demo Reactivation Pricelist</field>
+    </record>
+
+    <record id="demo_pricelist_item" model="product.pricelist.item">
+        <field name="pricelist_id" ref="tommasi_sales_reactivation.demo_pricelist" />
+        <field name="applied_on">1_product</field>
+        <field name="compute_price">fixed</field>
+        <field name="fixed_price">75000.0</field>
+        <field
+            name="product_tmpl_id"
+            ref="tommasi_sales_reactivation.demo_prod_in_stock_product_template"
+        />
+    </record>
+</odoo>
