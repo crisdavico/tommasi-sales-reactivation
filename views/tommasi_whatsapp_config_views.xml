@@ -27,21 +27,55 @@
                             <field name="name" placeholder="WhatsApp outbound" />
                         </h1>
                     </div>
+                    <div class="alert alert-info" role="alert">
+                        <p>
+                            <strong>Scoped HMAC credentials.</strong>
+                            Provision one router credential per company target with
+                            <code>manage_outbound_credentials.py create --account-id … --inbox-id …</code>,
+                            then paste the one-time <em>key_id</em>, API key, and HMAC
+                            secret here. Account and inbox IDs below must match that
+                            credential scope exactly (wrong scope → non-retryable 403).
+                            Secrets are manager-only and never logged; the reactivation
+                            agent cannot read this configuration directly.
+                        </p>
+                    </div>
                     <group>
-                        <group>
+                        <group string="Company and router">
                             <field name="company_id" />
                             <field name="active" />
                             <field name="router_base_url" />
+                            <field name="http_timeout_seconds" />
+                        </group>
+                        <group string="Chatwoot scope">
+                            <field name="chatwoot_account_id" />
+                            <field name="chatwoot_inbox_id" />
+                        </group>
+                    </group>
+                    <group string="Outbound credentials (LLM Manager)" groups="llm.group_llm_manager">
+                        <group>
+                            <field
+                                name="outbound_key_id"
+                                password="True"
+                                attrs="{'required': [('id', '!=', False)]}"
+                            />
                             <field
                                 name="outbound_api_key"
                                 password="True"
                                 attrs="{'required': [('id', '!=', False)]}"
                             />
+                            <field
+                                name="outbound_hmac_secret"
+                                password="True"
+                                attrs="{'required': [('id', '!=', False)]}"
+                            />
                         </group>
                         <group>
-                            <field name="chatwoot_account_id" />
-                            <field name="chatwoot_inbox_id" />
-                            <field name="http_timeout_seconds" />
+                            <div class="text-muted" colspan="2">
+                                Rotate by creating a replacement router credential,
+                                updating these three fields, validating a test send
+                                (HTTP 200 with conversation_id / message_id), then
+                                disabling the old router credential.
+                            </div>
                         </group>
                     </group>
                 </sheet>

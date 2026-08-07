@@ -27,6 +27,14 @@
                             <field name="reactivation_contacted_at" readonly="1" />
                         </group>
                     </group>
+                    <group string="Evidence summary">
+                        <field
+                            name="reactivation_evidence_summary"
+                            readonly="1"
+                            nolabel="1"
+                            widget="text"
+                        />
+                    </group>
                     <group string="Client message">
                         <field
                             name="reactivation_client_message"

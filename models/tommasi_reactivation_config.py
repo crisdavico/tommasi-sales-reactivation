@@ -97,6 +97,17 @@ class TommasiReactivationConfig(models.Model):
             "opportunity."
         ),
     )
+    tables_row_limit = fields.Integer(
+        string="Tables Row Limit",
+        default=10,
+        tracking=True,
+        help=(
+            "Maximum number of data rows shown in evidence, star-products, "
+            "and commercial-rationale HTML tables inside a reactivation CRM "
+            "opportunity description. Suggested products keep using "
+            "Maximum suggested products instead."
+        ),
+    )
     discount_pct = fields.Float(
         default=55.0,
         tracking=True,
@@ -206,6 +217,7 @@ class TommasiReactivationConfig(models.Model):
         "inactivity_days_primary",
         "inactivity_days_secondary",
         "suggested_products_max",
+        "tables_row_limit",
         "reminder_stale_days",
         "pending_review_archive_days",
         "discount_pct",
@@ -235,6 +247,10 @@ class TommasiReactivationConfig(models.Model):
             if record.suggested_products_max < 1:
                 raise ValidationError(
                     _("Maximum suggested products must be at least 1.")
+                )
+            if record.tables_row_limit < 1:
+                raise ValidationError(
+                    _("Tables row limit must be at least 1.")
                 )
             if record.reminder_stale_days < 0:
                 raise ValidationError(_("Reminder stale days cannot be negative."))

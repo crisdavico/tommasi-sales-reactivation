@@ -55,9 +55,11 @@ class TommasiReactivationServiceOpportunities(models.AbstractModel):
             ),
             "created_at": fields.Datetime.to_string(lead.create_date),
             "last_stage_change_at": fields.Datetime.to_string(lead.write_date),
+            "opportunity_url": self._crm_lead_form_url(lead.id),
         }
         if include_client_message:
             row["client_message"] = lead.reactivation_client_message or ""
+            row["evidence_summary"] = lead.reactivation_evidence_summary or ""
         return row
 
     def _opportunities_for_customer(
@@ -161,7 +163,8 @@ class TommasiReactivationServiceOpportunities(models.AbstractModel):
             seller_id: ID de ``res.users`` del vendedor asignado.
             statuses: Lista de nombres de etapas CRM a incluir.
             include_client_message: Si es ``true``, agrega el mensaje al cliente
-                tal como fue guardado al crear la oportunidad.
+                y el ``evidence_summary`` del lead, tal como fueron guardados al
+                crear la oportunidad.
         Returns:
             Forma escalar: ``{customer_id, seller_id, opportunities[]}``.
             Forma batch: ``{seller_id, results: {"<customer_id>": {opportunities[]}

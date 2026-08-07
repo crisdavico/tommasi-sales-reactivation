@@ -12,7 +12,8 @@
             "stage_id": 42,
             "stage_xml_id": "tommasi_sales_reactivation.stage_pendiente_revision",
             "created_at": "2026-07-08 21:05:22",
-            "last_stage_change_at": "2026-07-08 21:05:22"
+            "last_stage_change_at": "2026-07-08 21:05:22",
+            "opportunity_url": "http://localhost:8069/web#id=9001&model=crm.lead&view_type=form"
           }
         ]
       },

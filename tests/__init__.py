@@ -11,6 +11,5 @@ from . import test_reactivation_star_products
 from . import test_reactivation_crm_create
 from . import test_reactivation_batch
 from . import test_reactivation_create_safety
-from . import test_reactivation_snapshot
 from . import test_mcp_transport_contract
 from . import test_reactivation_whatsapp

@@ -40,6 +40,7 @@ class TestReactivationConfig(TransactionCase):
         self.assertEqual(config.min_confidence_threshold, 0.50)
         self.assertEqual(config.bootstrap_min_invoices, 3)
         self.assertEqual(config.bootstrap_invoice_window_days, 180)
+        self.assertEqual(config.tables_row_limit, 10)
         self.assertTrue(config.active)
 
     def test_priority_rules_seeded(self):
@@ -156,6 +157,8 @@ class TestReactivationConfig(TransactionCase):
             config.write({"opportunity_cap_per_seller": 0})
         with self.assertRaises(ValidationError):
             config.write({"suggested_products_max": 0})
+        with self.assertRaises(ValidationError):
+            config.write({"tables_row_limit": 0})
         with self.assertRaises(ValidationError):
             config.write({"bootstrap_invoice_window_days": 0})
 

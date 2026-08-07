@@ -12,33 +12,60 @@
                             <field name="name" placeholder="Sales reactivation" />
                         </h1>
                     </div>
-                    <group string="Operational parameters">
+                    <group string="General">
                         <group>
                             <field name="company_id" readonly="1" />
+                            <field name="active" />
+                        </group>
+                        <group>
                             <field
                                 name="currency_id"
                                 groups="base.group_multi_currency"
                             />
-                            <field name="active" />
+                        </group>
+                    </group>
+                    <group string="Detection">
+                        <group>
+                            <field name="bootstrap_min_invoices" />
+                            <field name="bootstrap_invoice_window_days" />
+                        </group>
+                        <group>
+                            <field name="inactivity_days_primary" />
+                            <field name="inactivity_days_secondary" />
+                        </group>
+                    </group>
+                    <group string="Opportunity controls">
+                        <group>
                             <field name="cooldown_days" />
                             <field name="opportunity_cap_per_seller" />
+                        </group>
+                        <group>
+                            <field name="min_confidence_threshold" />
+                        </group>
+                    </group>
+                    <group string="Product recommendations">
+                        <group>
                             <field name="low_stock_threshold" />
                             <field
                                 name="stock_location_ids"
                                 widget="many2many_tags"
                                 options="{'no_create': True}"
                             />
+                        </group>
+                        <group>
+                            <field name="suggested_products_max" />
+                        </group>
+                    </group>
+                    <group string="CRM lifecycle">
+                        <group>
                             <field name="reminder_stale_days" />
                             <field name="pending_review_archive_days" />
                         </group>
+                    </group>
+                    <group string="Presentation">
                         <group>
-                            <field name="inactivity_days_primary" />
-                            <field name="inactivity_days_secondary" />
-                            <field name="suggested_products_max" />
+                            <field name="tables_row_limit" />
                             <field name="discount_pct" invisible="1" />
-                            <field name="min_confidence_threshold" />
-                            <field name="bootstrap_min_invoices" />
-                            <field name="bootstrap_invoice_window_days" />
                         </group>
                     </group>
                     <notebook>

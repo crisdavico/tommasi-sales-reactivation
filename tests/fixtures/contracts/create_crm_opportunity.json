@@ -8,6 +8,7 @@
         "customer_id": 1001,
         "operation_key": "2025-06-24-daily|seller:81|customer:1001",
         "opportunity_id": 9001,
+        "opportunity_url": "http://localhost:8069/web#id=9001&model=crm.lead&view_type=form",
         "attribution_id": "REACT-2026-00001"
       },
       {
@@ -15,6 +16,7 @@
         "customer_id": 1002,
         "operation_key": "2025-06-24-daily|seller:81|customer:1002",
         "opportunity_id": 9002,
+        "opportunity_url": "http://localhost:8069/web#id=9002&model=crm.lead&view_type=form",
         "attribution_id": "REACT-2026-00002",
         "reason": "idempotent_replay"
       },

@@ -268,6 +268,53 @@ class TestReactivationServiceCandidates(TransactionCase):
         self.assertNotIn(customer.id, candidate_ids)
         self.assertEqual(result["screened_out_count"], baseline_screened_out + 1)
 
+    def test_dropoff_only_customer_included_with_live_facts(self):
+        """Product drop-off alone screens a customer in without snapshot rows."""
+        self.assertNotIn(
+            "tommasi.reactivation.facts.snapshot",
+            self.env,
+            "facts snapshot model must be removed",
+        )
+        customer = self._make_customer("Dropoff Only Candidate", "30-77777777-7")
+        filler = self.env["product.product"].create(
+            {
+                "name": "Dropoff Filler Product",
+                "default_code": "CAND-FILL",
+                "type": "product",
+                "list_price": 100.0,
+            }
+        )
+        today = date.today()
+        # Abandoned SKU in the prior half (cadence ~10d → threshold 30d).
+        for days_ago in (80, 70, 60):
+            self._create_invoice_with_product(
+                customer,
+                self.product,
+                fields.Date.to_string(today - timedelta(days=days_ago)),
+                1,
+                100.0,
+            )
+        # Recent filler keeps overall activity healthy (no inactivity/decline).
+        self._create_invoice_with_product(
+            customer,
+            filler,
+            fields.Date.to_string(today - timedelta(days=20)),
+            5,
+            100.0,
+        )
+        result = self._service().get_reactivation_candidates(self.seller_user.id)
+        candidate = self._candidate_for(result, customer.id)
+        self.assertIsNotNone(candidate)
+        self.assertIn("dropoff", candidate["screens"])
+        self.assertTrue(candidate["product_dropoff_facts"])
+        self.assertNotIn("inactivity", candidate["screens"])
+        self.assertNotIn("revenue_decline", candidate["screens"])
+        self.assertNotIn("qty_decline", candidate["screens"])
+        dropped_skus = {
+            fact.get("sku") for fact in candidate["product_dropoff_facts"]
+        }
+        self.assertIn(self.product.default_code, dropped_skus)
+
     def test_disabled_seller_returns_message(self):
         disabled_user = self.env["res.users"].create(
             {
@@ -407,13 +454,25 @@ class TestReactivationServiceCandidates(TransactionCase):
         original_build = model._build_detection_context
 
         def _build_side_effect(
-            self_model, partner, seller_env, config, date_range, customer_id=None
+            self_model,
+            partner,
+            seller_env,
+            config,
+            date_range,
+            customer_id=None,
+            facts=None,
         ):
             scoped_id = customer_id or partner.id
             if scoped_id == customer_fail.id:
                 raise ValueError("Simulated detection context failure")
             return original_build(
-                self_model, partner, seller_env, config, date_range, customer_id
+                self_model,
+                partner,
+                seller_env,
+                config,
+                date_range,
+                customer_id=customer_id,
+                facts=facts,
             )
 
         with patch.object(

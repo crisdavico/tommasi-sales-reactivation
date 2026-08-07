@@ -77,6 +77,10 @@ class CrmLead(models.Model):
             "agent. The seller can copy or forward it."
         ),
     )
+    reactivation_evidence_summary = fields.Text(
+        string="Evidence summary",
+        help="Structured evidence that triggered this reactivation opportunity.",
+    )
     reactivation_contacted_at = fields.Datetime(
         string="Reactivation contacted at",
         help=("Date and time when the opportunity moved to Customer " "contacted."),

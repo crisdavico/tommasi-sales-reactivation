@@ -1,5 +1,10 @@
+import hashlib
+import hmac
+import json
 import logging
 import re
+import time
+import uuid
 
 import requests
 
@@ -10,9 +15,23 @@ from odoo.addons.llm_tool.decorators import llm_tool
 
 _logger = logging.getLogger(__name__)
 
+_OUTBOUND_METHOD = "POST"
+_OUTBOUND_PATH = "/v1/outbound/messages"
 _E164_PHONE_RE = re.compile(r"^\+[1-9]\d{1,14}$")
 _TEMPLATE_PARAM_KEYS = frozenset({"name", "category", "language", "processed_params"})
-_SECRET_SUBSTRINGS = ("api_key", "api-key", "authorization", "bearer", "token")
+_SECRET_SUBSTRINGS = (
+    "api_key",
+    "api-key",
+    "authorization",
+    "bearer",
+    "token",
+    "hmac",
+    "signature",
+    "nonce",
+    "key_id",
+    "key-id",
+    "x-outbound",
+)
 
 
 class TommasiReactivationServiceWhatsapp(models.AbstractModel):
@@ -111,16 +130,56 @@ class TommasiReactivationServiceWhatsapp(models.AbstractModel):
             payload["idempotency_key"] = idempotency_key
         return payload
 
-    def _post_outbound_message(self, config, payload):
-        url = "%s/v1/outbound/messages" % config.router_base_url.rstrip("/")
-        headers = {
+    def _serialize_outbound_body(self, payload):
+        """Build-once compact UTF-8 JSON bytes for signing and POST."""
+        return json.dumps(
+            payload, separators=(",", ":"), ensure_ascii=False
+        ).encode("utf-8")
+
+    def _compute_outbound_signature(
+        self, secret, method, path, key_id, timestamp, nonce, body_bytes
+    ):
+        """Six-field outbound HMAC-SHA256 (lowercase hex digest)."""
+        body_sha256_hex = hashlib.sha256(body_bytes).hexdigest()
+        sign_string = "\n".join(
+            (method, path, key_id, timestamp, nonce, body_sha256_hex)
+        )
+        return hmac.new(
+            secret.encode(),
+            sign_string.encode(),
+            hashlib.sha256,
+        ).hexdigest()
+
+    def _build_outbound_auth_headers(self, config, body_bytes):
+        """Fresh timestamp + UUID-hex nonce; sign exact body bytes to transmit."""
+        timestamp = str(int(time.time()))
+        nonce = uuid.uuid4().hex
+        signature = self._compute_outbound_signature(
+            config.outbound_hmac_secret,
+            _OUTBOUND_METHOD,
+            _OUTBOUND_PATH,
+            config.outbound_key_id,
+            timestamp,
+            nonce,
+            body_bytes,
+        )
+        return {
             "Content-Type": "application/json",
+            "X-Outbound-Key-Id": config.outbound_key_id,
             "X-Outbound-Api-Key": config.outbound_api_key,
+            "X-Timestamp": timestamp,
+            "X-Nonce": nonce,
+            "X-Signature": signature,
         }
+
+    def _post_outbound_message(self, config, payload):
+        url = "%s%s" % (config.router_base_url.rstrip("/"), _OUTBOUND_PATH)
+        body_bytes = self._serialize_outbound_body(payload)
+        headers = self._build_outbound_auth_headers(config, body_bytes)
         response = requests.post(
             url,
             headers=headers,
-            json=payload,
+            data=body_bytes,
             timeout=config.http_timeout_seconds,
         )
         return response
@@ -159,14 +218,26 @@ class TommasiReactivationServiceWhatsapp(models.AbstractModel):
                 "error": None,
             }
         if http_status == 401:
+            # Always generic: never surface router detail (may echo secrets).
             return {
                 "status": "error",
                 "http_status": http_status,
                 "conversation_id": None,
                 "message_id": None,
                 "retryable": False,
-                "error": self._sanitize_whatsapp_error(
-                    detail or _("Router rejected the outbound API key.")
+                "error": _("Router rejected outbound authentication."),
+            }
+        if http_status == 403:
+            # Scope/authz mismatch is non-retryable; keep wording credential-safe.
+            return {
+                "status": "error",
+                "http_status": http_status,
+                "conversation_id": None,
+                "message_id": None,
+                "retryable": False,
+                "error": _(
+                    "Outbound credentials do not match the "
+                    "requested account or inbox."
                 ),
             }
         if http_status == 409:
@@ -323,6 +394,27 @@ class TommasiReactivationServiceWhatsapp(models.AbstractModel):
             )
             return self._whatsapp_tool_result(partner_id, company_id, result)
 
+        if not config._has_complete_outbound_credentials():
+            result = {
+                "status": "rejected_no_config",
+                "http_status": None,
+                "conversation_id": None,
+                "message_id": None,
+                "retryable": False,
+                "error": _(
+                    "WhatsApp outbound credentials are incomplete for this company."
+                ),
+            }
+            self._create_whatsapp_log(
+                partner,
+                company_id,
+                config,
+                template_params,
+                idempotency_key,
+                result,
+            )
+            return self._whatsapp_tool_result(partner_id, company_id, result)
+
         phone = self._normalize_partner_mobile(partner.mobile)
         payload = self._build_outbound_payload(
             config,
@@ -401,10 +493,11 @@ class TommasiReactivationServiceWhatsapp(models.AbstractModel):
 
         Resolves the partner mobile from Odoo, enforces consent and company
         checks, and forwards a structured template payload to
-        ``POST /v1/outbound/messages``. Callers must supply ``company_id`` and
-        ``template_params`` (``name``, ``category``, ``language``,
-        ``processed_params``); router URL, API key, and Chatwoot routing IDs
-        come from the standalone per-company WhatsApp configuration.
+        ``POST /v1/outbound/messages`` with scoped HMAC authentication.
+        Callers must supply ``company_id`` and ``template_params`` (``name``,
+        ``category``, ``language``, ``processed_params``); router URL,
+        outbound credentials (key id, API key, HMAC secret), and Chatwoot
+        routing IDs come from the standalone per-company WhatsApp configuration.
 
         Args:
             partner_id: ``res.partner`` id for the recipient.

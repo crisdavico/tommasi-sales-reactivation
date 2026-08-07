@@ -218,7 +218,9 @@ class TestMcpTransportContract(TransactionCase):
                 "name": "Transport WhatsApp",
                 "company_id": self.env.company.id,
                 "router_base_url": "https://router.test",
-                "outbound_api_key": "transport-secret",
+                "outbound_key_id": "out_test_transport",
+                "outbound_api_key": "test-outbound-api-key-transport00001",
+                "outbound_hmac_secret": "test-outbound-hmac-secret-transport",
                 "chatwoot_account_id": 1,
                 "chatwoot_inbox_id": 5,
             }

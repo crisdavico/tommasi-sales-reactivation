@@ -11,21 +11,18 @@ class TommasiReactivationServiceDetection(models.AbstractModel):
     _inherit = "tommasi.reactivation.service"
 
     def _build_detection_context(
-        self, partner, seller_env, config, date_range, customer_id=None
+        self,
+        partner,
+        seller_env,
+        config,
+        date_range,
+        customer_id=None,
+        facts=None,
     ):
         """Return the full detection context dict for a scoped customer."""
         customer_id = customer_id or partner.id
         commercial_partner_id = self._commercial_partner_id_for_customer(customer_id)
         window = self._resolve_date_range(date_range, config)
-        seller_id = (
-            seller_env.context.get("reactivation_seller_id") if seller_env else None
-        )
-        snapshot = self._get_fresh_snapshots(
-            [commercial_partner_id],
-            config,
-            date_range,
-            seller_id=seller_id,
-        ).get(commercial_partner_id)
 
         today = fields.Date.context_today(self)
         floor_date = today - timedelta(days=PRODUCT_HISTORY_FLOOR_WINDOW_DAYS)
@@ -37,30 +34,27 @@ class TommasiReactivationServiceDetection(models.AbstractModel):
         # fall back to their own default window always run through today).
         wide_date_from = min(window_date_from, floor_date)
         wide_date_to = max(window_date_to, today)
-        shared_facts = self._get_invoice_facts(
-            customer_id,
-            date_from=fields.Date.to_string(wide_date_from),
-            date_to=fields.Date.to_string(wide_date_to),
-            commercial_partner_id=commercial_partner_id,
-        )
-        if snapshot:
-            sales_history = self._snapshot_sales_history(snapshot)
-            last_purchase = self._snapshot_last_purchase(snapshot)
-            product_history = self._snapshot_product_history(snapshot)
-            self._annotate_product_dropoff(product_history, config=config)
+        if facts is None:
+            shared_facts = self._get_invoice_facts(
+                customer_id,
+                date_from=fields.Date.to_string(wide_date_from),
+                date_to=fields.Date.to_string(wide_date_to),
+                commercial_partner_id=commercial_partner_id,
+            )
         else:
-            sales_history = self._get_sales_history(
-                customer_id,
-                date_range=date_range,
-                config=config,
-                facts=shared_facts,
-            )
-            last_purchase = self._get_last_purchase(customer_id, seller_env=seller_env)
-            product_history = self._get_product_history_with_dropoff(
-                customer_id,
-                config=config,
-                facts=shared_facts,
-            )
+            shared_facts = facts
+        sales_history = self._get_sales_history(
+            customer_id,
+            date_range=date_range,
+            config=config,
+            facts=shared_facts,
+        )
+        last_purchase = self._get_last_purchase(customer_id, seller_env=seller_env)
+        product_history = self._get_product_history_with_dropoff(
+            customer_id,
+            config=config,
+            facts=shared_facts,
+        )
         volume_decline_with_stock = self._get_volume_decline_with_stock(
             customer_id,
             config=config,

@@ -730,6 +730,7 @@ class TestReactivationBootstrapDetection(ReactivationServiceTestMixin, Transacti
                     "reactivation_is_agent": True,
                     "reactivation_attribution_id": "attr-service-test-001",
                     "reactivation_client_message": "Hola cliente",
+                    "reactivation_evidence_summary": "Disparadores: Inactividad",
                 }
             )
         )
@@ -742,6 +743,15 @@ class TestReactivationBootstrapDetection(ReactivationServiceTestMixin, Transacti
         self.assertEqual(len(result["opportunities"]), 1)
         self.assertEqual(result["opportunities"][0]["opportunity_id"], lead.id)
         self.assertEqual(result["opportunities"][0]["client_message"], "Hola cliente")
+        self.assertEqual(
+            result["opportunities"][0]["evidence_summary"],
+            "Disparadores: Inactividad",
+        )
+        opportunity_url = result["opportunities"][0].get("opportunity_url")
+        self.assertTrue(opportunity_url)
+        self.assertIn("crm.lead", opportunity_url)
+        self.assertIn("id=%s" % lead.id, opportunity_url)
+        self.assertIn("view_type=form", opportunity_url)
 
     def test_helpers_are_not_llm_tools(self):
         tools = self.env["llm.tool"].search(

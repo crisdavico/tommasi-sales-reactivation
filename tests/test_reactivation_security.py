@@ -247,3 +247,75 @@ class TestReactivationSecurity(TransactionCase):
                     "reactivation_is_agent": True,
                 }
             )
+
+    def _create_whatsapp_config_for_security(self, **overrides):
+        # Use the agent's company so multi-company record rules do not hide the row
+        # when model read is temporarily granted for field-level checks.
+        existing = self.env["tommasi.whatsapp.config"].search(
+            [("company_id", "=", self.env.company.id)], limit=1
+        )
+        if existing:
+            existing.unlink()
+        values = {
+            "name": "Security WhatsApp Config",
+            "company_id": self.env.company.id,
+            "router_base_url": "https://router.security.test",
+            "outbound_key_id": "out_sec_agent_deny",
+            "outbound_api_key": "test-outbound-api-key-security0001",
+            "outbound_hmac_secret": "test-outbound-hmac-secret-sec0001",
+            "chatwoot_account_id": 10,
+            "chatwoot_inbox_id": 20,
+        }
+        values.update(overrides)
+        return self.env["tommasi.whatsapp.config"].create(values)
+
+    def test_agent_cannot_read_whatsapp_config_records(self):
+        whatsapp_config = self._create_whatsapp_config_for_security()
+        agent_config = self.env(user=self.agent_user)["tommasi.whatsapp.config"]
+        with self.assertRaises(AccessError):
+            agent_config.check_access_rights("read")
+        with self.assertRaises(AccessError):
+            agent_config.search([("id", "=", whatsapp_config.id)])
+        with self.assertRaises(AccessError):
+            agent_config.browse(whatsapp_config.id).read(["name"])
+
+    def test_agent_cannot_read_outbound_credential_fields(self):
+        """Even with model read temporarily granted, secret fields stay manager-only."""
+        whatsapp_config = self._create_whatsapp_config_for_security(
+            name="Security WhatsApp Secrets",
+            outbound_key_id="out_sec_secret_deny",
+            outbound_api_key="test-outbound-api-key-security0002",
+            outbound_hmac_secret="test-outbound-hmac-secret-sec0002",
+            chatwoot_account_id=11,
+            chatwoot_inbox_id=21,
+        )
+        access = self.env.ref(
+            "tommasi_sales_reactivation.access_whatsapp_config_agent"
+        )
+        access.write(
+            {
+                "perm_read": True,
+                "perm_write": False,
+                "perm_create": False,
+                "perm_unlink": False,
+            }
+        )
+        self.env["ir.model.access"].clear_caches()
+
+        agent_config = self.env(user=self.agent_user)[
+            "tommasi.whatsapp.config"
+        ].browse(whatsapp_config.id)
+        # Non-secret fields become readable once model ACL allows it.
+        name_data = agent_config.read(["name"])
+        self.assertEqual(name_data[0]["name"], "Security WhatsApp Secrets")
+
+        secret_fields = [
+            "outbound_key_id",
+            "outbound_api_key",
+            "outbound_hmac_secret",
+        ]
+        with self.assertRaises(AccessError):
+            agent_config.read(secret_fields)
+        fields_meta = agent_config.fields_get(secret_fields)
+        for field_name in secret_fields:
+            self.assertNotIn(field_name, fields_meta)

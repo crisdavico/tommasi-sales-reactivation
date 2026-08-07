@@ -248,6 +248,13 @@ msgid ""
 msgstr ""
 
 #. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__pending_review_archive_days
+msgid ""
+"Days an opportunity can stay in Pending review before the daily cron "
+"archives it automatically."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
 #: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__days_inactive
 msgid ""
 "Days since the last purchase, computed at read time from last_purchase_date "
@@ -330,6 +337,12 @@ msgstr ""
 #. module: tommasi_sales_reactivation
 #: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__date_to
 msgid "End date of the detection window used for this snapshot."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_crm_lead__reactivation_evidence_summary
+#: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.crm_lead_view_form_reactivation
+msgid "Evidence summary"
 msgstr ""
 
 #. module: tommasi_sales_reactivation
@@ -556,6 +569,15 @@ msgstr ""
 #. module: tommasi_sales_reactivation
 #: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__suggested_products_max
 msgid "Maximum number of products suggested in each reactivation opportunity."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__tables_row_limit
+msgid ""
+"Maximum number of data rows shown in evidence, star-products, and "
+"commercial-rationale HTML tables inside a reactivation CRM opportunity "
+"description. Suggested products keep using Maximum suggested products "
+"instead."
 msgstr ""
 
 #. module: tommasi_sales_reactivation
@@ -797,7 +819,32 @@ msgstr ""
 
 #. module: tommasi_sales_reactivation
 #: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.tommasi_reactivation_config_view_form
-msgid "Operational parameters"
+msgid "CRM lifecycle"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.tommasi_reactivation_config_view_form
+msgid "Detection"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.tommasi_reactivation_config_view_form
+msgid "General"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.tommasi_reactivation_config_view_form
+msgid "Opportunity controls"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.tommasi_reactivation_config_view_form
+msgid "Presentation"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.tommasi_reactivation_config_view_form
+msgid "Product recommendations"
 msgstr ""
 
 #. module: tommasi_sales_reactivation
@@ -845,6 +892,17 @@ msgstr ""
 #. module: tommasi_sales_reactivation
 #: model:ir.model,name:tommasi_sales_reactivation.model_tommasi_reactivation_facts_snapshot
 msgid "Pre-computed sales reactivation facts snapshot"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__pending_review_archive_days
+msgid "Pending review archive days"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: code:addons/tommasi_sales_reactivation/models/tommasi_reactivation_config.py:0
+#, python-format
+msgid "Pending review archive days must be at least 1."
 msgstr ""
 
 #. module: tommasi_sales_reactivation
@@ -1149,9 +1207,26 @@ msgid ""
 msgstr ""
 
 #. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_crm_lead__reactivation_evidence_summary
+msgid "Structured evidence that triggered this reactivation opportunity."
+msgstr ""
+
+#. module: tommasi_sales_reactivation
 #: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__suggested_products_max
 msgid "Suggested Products Max"
 msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__tables_row_limit
+msgid "Tables Row Limit"
+msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: code:addons/tommasi_sales_reactivation/models/tommasi_reactivation_config.py:0
+#, python-format
+msgid "Tables row limit must be at least 1."
+msgstr ""
+
 
 #. module: tommasi_sales_reactivation
 #: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__priority_rule_ids

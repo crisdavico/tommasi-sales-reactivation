@@ -86,24 +86,25 @@ msgstr "Cantidad de adjuntos"
 #. module: tommasi_sales_reactivation
 #: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__bootstrap_invoice_window_days
 msgid "Bootstrap Invoice Window Days"
-msgstr ""
+msgstr "Días de ventana de facturas del arranque"
 
 #. module: tommasi_sales_reactivation
 #: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__bootstrap_min_invoices
 msgid "Bootstrap Min Invoices"
-msgstr ""
+msgstr "Mínimo de facturas del arranque"
 
 #. module: tommasi_sales_reactivation
 #: code:addons/tommasi_sales_reactivation/models/tommasi_reactivation_config.py:0
 #, python-format
 msgid "Bootstrap invoice window days must be at least 1."
 msgstr ""
+"Los días de ventana de facturas del arranque deben ser al menos 1."
 
 #. module: tommasi_sales_reactivation
 #: code:addons/tommasi_sales_reactivation/models/tommasi_reactivation_config.py:0
 #, python-format
 msgid "Bootstrap minimum invoices cannot be negative."
-msgstr ""
+msgstr "El mínimo de facturas del arranque no puede ser negativo."
 
 #. module: tommasi_sales_reactivation
 #: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_priority_rule__cap_order
@@ -261,6 +262,15 @@ msgstr ""
 "que el agente envíe un recordatorio al vendedor."
 
 #. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__pending_review_archive_days
+msgid ""
+"Days an opportunity can stay in Pending review before the daily cron "
+"archives it automatically."
+msgstr ""
+"Días que una oportunidad puede permanecer en Pendiente de revisión antes de "
+"que el cron diario la archive automáticamente."
+
+#. module: tommasi_sales_reactivation
 #: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__days_inactive
 msgid ""
 "Days since the last purchase, computed at read time from last_purchase_date "
@@ -296,6 +306,9 @@ msgid ""
 "Deprecated — no longer used for pricing. Net prices come from the customer "
 "pricelist; pricelist line discounts are shown as commercial reference only."
 msgstr ""
+"Obsoleto — ya no se usa para precios. Los precios netos provienen de la "
+"lista de precios del cliente; los descuentos de línea de la lista se "
+"muestran solo como referencia comercial."
 
 #. module: tommasi_sales_reactivation
 #: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.tommasi_reactivation_facts_snapshot_view_form
@@ -348,6 +361,12 @@ msgstr "Vendedores habilitados"
 #: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__date_to
 msgid "End date of the detection window used for this snapshot."
 msgstr ""
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_crm_lead__reactivation_evidence_summary
+#: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.crm_lead_view_form_reactivation
+msgid "Evidence summary"
+msgstr "Resumen de evidencia"
 
 #. module: tommasi_sales_reactivation
 #: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_priority_rule__multi_trigger_weight
@@ -429,7 +448,7 @@ msgstr "Cómo se creó esta oportunidad de reactivación."
 #: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_priority_rule__id
 #: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_seller__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: tommasi_sales_reactivation
 #: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__activity_exception_icon
@@ -547,6 +566,8 @@ msgstr "Lead/Oportunidad"
 #: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__bootstrap_invoice_window_days
 msgid "Lookback window in days for the bootstrap minimum-invoice filter."
 msgstr ""
+"Ventana de búsqueda en días para el filtro de mínimo de facturas del "
+"arranque."
 
 #. module: tommasi_sales_reactivation
 #: model:ir.model.fields.selection,name:tommasi_sales_reactivation.selection__tommasi_reactivation_priority_rule__label__low
@@ -582,6 +603,19 @@ msgstr ""
 msgid "Maximum number of products suggested in each reactivation opportunity."
 msgstr ""
 "Cantidad máxima de productos sugeridos en cada oportunidad de reactivación."
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__tables_row_limit
+msgid ""
+"Maximum number of data rows shown in evidence, star-products, and "
+"commercial-rationale HTML tables inside a reactivation CRM opportunity "
+"description. Suggested products keep using Maximum suggested products "
+"instead."
+msgstr ""
+"Cantidad máxima de filas de datos mostradas en las tablas HTML de evidencia,"
+" productos estrella y justificación comercial dentro de la descripción de "
+"una oportunidad CRM de reactivación. Los productos sugeridos siguen usando "
+"Máximo de productos sugeridos."
 
 #. module: tommasi_sales_reactivation
 #: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__opportunity_cap_per_seller
@@ -692,6 +726,9 @@ msgid ""
 " window for a partner to enter the detection cycle. Set to 0 to disable this"
 " filter."
 msgstr ""
+"Cantidad mínima de facturas de cliente publicadas requerida en la ventana "
+"de facturas del arranque para que un contacto entre al ciclo de detección. "
+"Establezca 0 para desactivar este filtro."
 
 #. module: tommasi_sales_reactivation
 #: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_priority_rule__min_decline_pct
@@ -709,6 +746,9 @@ msgid ""
 "quantity at or below this number are excluded from recommendations and "
 "rejected at opportunity creation."
 msgstr ""
+"Stock mínimo requerido para sugerir un producto. Los productos con "
+"cantidad disponible igual o menor a este número se excluyen de las "
+"recomendaciones y se rechazan al crear la oportunidad."
 
 #. module: tommasi_sales_reactivation
 #: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_res_users__mobile
@@ -841,8 +881,33 @@ msgstr ""
 
 #. module: tommasi_sales_reactivation
 #: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.tommasi_reactivation_config_view_form
-msgid "Operational parameters"
-msgstr "Parámetros operativos"
+msgid "CRM lifecycle"
+msgstr "Ciclo de vida CRM"
+
+#. module: tommasi_sales_reactivation
+#: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.tommasi_reactivation_config_view_form
+msgid "Detection"
+msgstr "Detección"
+
+#. module: tommasi_sales_reactivation
+#: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.tommasi_reactivation_config_view_form
+msgid "General"
+msgstr "General"
+
+#. module: tommasi_sales_reactivation
+#: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.tommasi_reactivation_config_view_form
+msgid "Opportunity controls"
+msgstr "Controles de oportunidades"
+
+#. module: tommasi_sales_reactivation
+#: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.tommasi_reactivation_config_view_form
+msgid "Presentation"
+msgstr "Presentación"
+
+#. module: tommasi_sales_reactivation
+#: model_terms:ir.ui.view,arch_db:tommasi_sales_reactivation.tommasi_reactivation_config_view_form
+msgid "Product recommendations"
+msgstr "Recomendaciones de producto"
 
 #. module: tommasi_sales_reactivation
 #: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__opportunity_cap_per_seller
@@ -872,9 +937,22 @@ msgid "Pendiente de revisión"
 msgstr ""
 
 #. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__pending_review_archive_days
+msgid "Pending review archive days"
+msgstr "Días para archivar Pendiente de revisión"
+
+#. module: tommasi_sales_reactivation
+#: code:addons/tommasi_sales_reactivation/models/tommasi_reactivation_config.py:0
+#, python-format
+msgid "Pending review archive days must be at least 1."
+msgstr ""
+"Los días para archivar Pendiente de revisión deben ser al menos 1."
+
+#. module: tommasi_sales_reactivation
 #: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__seller_ids
 msgid "Per-seller settings linked to the enabled salespeople above."
 msgstr ""
+"Ajustes por vendedor vinculados a los vendedores habilitados de arriba."
 
 #. module: tommasi_sales_reactivation
 #: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__qty_change_pct
@@ -1117,6 +1195,8 @@ msgid ""
 "Salespeople included in the reactivation agent. Use Add a line to select one"
 " or more salespeople at once."
 msgstr ""
+"Vendedores incluidos en el agente de reactivación. Use Agregar una línea "
+"para seleccionar uno o más vendedores a la vez."
 
 #. module: tommasi_sales_reactivation
 #: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__seller_id
@@ -1152,7 +1232,7 @@ msgstr ""
 #. module: tommasi_sales_reactivation
 #: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__seller_ids
 msgid "Seller details"
-msgstr ""
+msgstr "Detalle de vendedores"
 
 #. module: tommasi_sales_reactivation
 #: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_facts_snapshot__product_history_json
@@ -1212,9 +1292,25 @@ msgstr ""
 "la configuración."
 
 #. module: tommasi_sales_reactivation
+#: model:ir.model.fields,help:tommasi_sales_reactivation.field_crm_lead__reactivation_evidence_summary
+msgid "Structured evidence that triggered this reactivation opportunity."
+msgstr "Evidencia estructurada que disparó esta oportunidad de reactivación."
+
+#. module: tommasi_sales_reactivation
 #: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__suggested_products_max
 msgid "Suggested Products Max"
 msgstr "Máximo de productos sugeridos"
+
+#. module: tommasi_sales_reactivation
+#: model:ir.model.fields,field_description:tommasi_sales_reactivation.field_tommasi_reactivation_config__tables_row_limit
+msgid "Tables Row Limit"
+msgstr "Límite de filas de tablas"
+
+#. module: tommasi_sales_reactivation
+#: code:addons/tommasi_sales_reactivation/models/tommasi_reactivation_config.py:0
+#, python-format
+msgid "Tables row limit must be at least 1."
+msgstr "El límite de filas de tablas debe ser al menos 1."
 
 #. module: tommasi_sales_reactivation
 #: model:ir.model.fields,help:tommasi_sales_reactivation.field_tommasi_reactivation_config__priority_rule_ids

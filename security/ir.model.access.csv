@@ -18,10 +18,8 @@ access_product_product_agent,product.product agent,product.model_product_product
 access_product_template_agent,product.template agent,product.model_product_template,group_reactivation_agent,1,0,0,0
 access_product_pricelist_agent,product.pricelist agent,product.model_product_pricelist,group_reactivation_agent,1,0,0,0
 access_stock_quant_agent,stock.quant agent,stock.model_stock_quant,group_reactivation_agent,1,0,0,0
-access_reactivation_facts_snapshot_manager,tommasi.reactivation.facts.snapshot manager,model_tommasi_reactivation_facts_snapshot,llm.group_llm_manager,1,1,1,1
-access_reactivation_facts_snapshot_agent,tommasi.reactivation.facts.snapshot agent,model_tommasi_reactivation_facts_snapshot,group_reactivation_agent,1,0,0,0
 access_mail_message_agent,mail.message agent,mail.model_mail_message,group_reactivation_agent,1,1,1,0
 access_whatsapp_config_manager,tommasi.whatsapp.config manager,model_tommasi_whatsapp_config,llm.group_llm_manager,1,1,1,1
 access_whatsapp_log_manager,tommasi.whatsapp.log manager,model_tommasi_whatsapp_log,llm.group_llm_manager,1,1,1,1
-access_whatsapp_config_agent,tommasi.whatsapp.config agent,model_tommasi_whatsapp_config,group_reactivation_agent,1,0,0,0
+access_whatsapp_config_agent,tommasi.whatsapp.config agent,model_tommasi_whatsapp_config,group_reactivation_agent,0,0,0,0
 access_whatsapp_log_agent,tommasi.whatsapp.log agent,model_tommasi_whatsapp_log,group_reactivation_agent,1,0,1,0

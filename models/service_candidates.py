@@ -1,8 +1,11 @@
 from collections import defaultdict
+from datetime import timedelta
 
 from odoo import fields, models
 
 from odoo.addons.llm_tool.decorators import llm_tool
+
+from .tommasi_reactivation_service import PRODUCT_HISTORY_FLOOR_WINDOW_DAYS
 
 
 class TommasiReactivationServiceCandidates(models.AbstractModel):
@@ -186,31 +189,24 @@ class TommasiReactivationServiceCandidates(models.AbstractModel):
             screens.append("dropoff")
         return screens
 
-    def _candidate_product_dropoff_facts(self, snapshot, config):
-        """Return compact drop-off facts from a fresh snapshot when available."""
-        if not snapshot:
-            return []
-        history = self._snapshot_product_history(snapshot)
+    def _candidate_product_dropoff_facts(
+        self, customer_id, config, date_range, facts=None
+    ):
+        """Return compact drop-off facts from live invoice facts."""
+        history = self._get_product_history(
+            customer_id,
+            date_range=date_range,
+            config=config,
+            facts=facts,
+        )
         if not isinstance(history, list):
             return []
         return self._annotate_product_dropoff(history, config=config)
 
     def _resolve_candidate_metrics(
-        self, commercial_id, snapshot, last_purchase, revenue, qty, today
+        self, commercial_id, last_purchase, revenue, qty, today
     ):
-        """Return normalized screening metrics from snapshot or live batch SQL."""
-        if snapshot:
-            last_purchase_info = self._snapshot_last_purchase(snapshot)
-            last_date = self._parse_date(last_purchase_info.get("last_purchase_date"))
-            rev_metrics = self._snapshot_revenue_metrics(snapshot)
-            return {
-                "last_date": last_date,
-                "days_inactive": last_purchase_info.get("days_inactive"),
-                "revenue_prior": round(rev_metrics["prior"], 2),
-                "revenue_recent": round(rev_metrics["recent"], 2),
-                "revenue_change_pct": rev_metrics["change_pct"],
-                "qty_change_pct": snapshot.qty_change_pct,
-            }
+        """Return normalized screening metrics from live batch SQL."""
         rev = revenue.get(commercial_id, {"prior": 0.0, "recent": 0.0})
         qty_halves = qty.get(commercial_id, {"prior": 0.0, "recent": 0.0})
         return self._half_window_metrics(
@@ -242,14 +238,21 @@ class TommasiReactivationServiceCandidates(models.AbstractModel):
             "product_dropoff_facts": dropoff_facts or [],
         }
 
-    def _candidate_detection_context(self, customer_id, seller_env, config, date_range):
+    def _candidate_detection_context(
+        self, customer_id, seller_env, config, date_range, facts=None
+    ):
         """Build detection_context for one screened candidate; never raises."""
         try:
             partner = seller_env["res.partner"].browse(customer_id)
             if not partner.exists():
                 return {"message": "Customer not found for seller scope."}
             full = self._build_detection_context(
-                partner, seller_env, config, date_range, customer_id=customer_id
+                partner,
+                seller_env,
+                config,
+                date_range,
+                customer_id=customer_id,
+                facts=facts,
             )
             return {key: full[key] for key in self._DETECTION_CONTEXT_KEYS}
         except Exception as exc:
@@ -286,18 +289,19 @@ class TommasiReactivationServiceCandidates(models.AbstractModel):
         date_to: str = None,
         customer_ids: list = None,
     ) -> dict:
-        """Preselecciona, con ~4 consultas SQL en lote, los clientes de un vendedor
+        """Preselecciona, con consultas SQL en lote, los clientes de un vendedor
         que muestran alguna señal de reactivación en la ventana de detección.
 
         Pensado para reemplazar el patrón "un ``get_customer_detection_context``
         por cliente" cuando hay que revisar la cartera completa de un vendedor:
         en lugar de N llamadas (una por cliente), esta hace consultas agregadas
-        por vendedor y devuelve solo los clientes que pasan al menos un filtro
+        por vendedor (métricas de mitad de ventana + un lote de invoice facts
+        para drop-off) y devuelve solo los clientes que pasan al menos un filtro
         ("screen"). Con ``include_context=true``, cada candidato incluye además
         el mismo ``detection_context`` que devolvería
-        ``get_customer_detection_context``, resuelto en la misma transacción
-        del servidor; si un cliente falla, su ``detection_context`` trae
-        ``{"message": ...}`` sin abortar el resto del lote.
+        ``get_customer_detection_context``, reutilizando los facts del lote
+        cuando está disponible; si un cliente falla, su ``detection_context``
+        trae ``{"message": ...}`` sin abortar el resto del lote.
 
         **Seguridad**
         - Solo acepta vendedores habilitados en la configuración de reactivación,
@@ -323,15 +327,17 @@ class TommasiReactivationServiceCandidates(models.AbstractModel):
           confirmado (``sale``/``done``) con cantidad pendiente de entrega en
           un producto elegible (activo, almacenable). Solo pedidos con
           ``date_order`` en los últimos 90 días.
+        - ``dropoff``: al menos un producto almacenable activo con
+          ``dropped_off`` según cadencia / umbral de inactividad (calculado en
+          vivo desde el lote de invoice facts; expuesto en
+          ``product_dropoff_facts``).
 
         **Trade-off conocido**
-        La caída de volumen se mide sobre el total facturado del cliente, no
-        por producto. Un cliente que dejó de comprar un producto puntual pero
-        compensó con otros (volumen total estable) **no** aparece como
-        candidato aquí; ese caso puntual lo detecta
-        ``get_customer_detection_context`` → ``volume_decline_with_stock``,
-        que sí compara por producto. Este tool prioriza velocidad de barrido
-        sobre esa granularidad.
+        La caída de volumen agregada se mide sobre el total facturado del
+        cliente. El screen ``dropoff`` sí captura productos puntuales
+        abandonados aunque el volumen total se haya compensado con otros SKUs;
+        ``volume_decline_with_stock`` (en detection context) sigue siendo el
+        análisis por producto con stock disponible.
 
         **Ejemplo de llamada**
         ``get_reactivation_candidates(seller_id=42, include_context=true)``
@@ -449,23 +455,32 @@ class TommasiReactivationServiceCandidates(models.AbstractModel):
             commercial_ids, seller_id, window["date_from"], midpoint, window["date_to"]
         )
         undelivered_ids = self._candidate_undelivered_batch(commercial_ids, seller_id)
-        fresh_snapshots = self._get_fresh_snapshots(
-            commercial_ids, config, window, seller_id=seller_id
-        )
 
         today = fields.Date.context_today(self)
+        floor_date = today - timedelta(days=PRODUCT_HISTORY_FLOOR_WINDOW_DAYS)
+        batch_date_from = fields.Date.to_string(min(date_from, floor_date))
+        facts_by_commercial = self._get_invoice_facts_batch(
+            commercial_ids,
+            date_from=batch_date_from,
+            date_to=window["date_to"],
+        )
+
         seller_env = None
         if include_context:
             seller_env = self._env_with_seller(seller_id)
         candidates = []
         screened_out_count = 0
         for commercial_id, info in partner_map.items():
-            snapshot = fresh_snapshots.get(commercial_id)
             metrics = self._resolve_candidate_metrics(
-                commercial_id, snapshot, last_purchase, revenue, qty, today
+                commercial_id, last_purchase, revenue, qty, today
             )
             has_undelivered = commercial_id in undelivered_ids
-            dropoff_facts = self._candidate_product_dropoff_facts(snapshot, config)
+            partner_facts = facts_by_commercial.get(
+                commercial_id, {"moves": [], "lines": []}
+            )
+            dropoff_facts = self._candidate_product_dropoff_facts(
+                info["customer_id"], config, window, facts=partner_facts
+            )
             screens = self._candidate_screens(
                 metrics, has_undelivered, config, dropoff_facts=dropoff_facts
             )
@@ -477,7 +492,11 @@ class TommasiReactivationServiceCandidates(models.AbstractModel):
             )
             if include_context:
                 row["detection_context"] = self._candidate_detection_context(
-                    info["customer_id"], seller_env, config, window
+                    info["customer_id"],
+                    seller_env,
+                    config,
+                    window,
+                    facts=partner_facts,
                 )
             candidates.append(row)
 

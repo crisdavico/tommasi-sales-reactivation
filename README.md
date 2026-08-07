@@ -1,6 +1,6 @@
 # Tommasi Sales Reactivation
 
-**Module version**: `15.0.1.4.0` (v1.11 — generic partner WhatsApp outbound via Chatwoot router)
+**Module version**: `15.0.1.9.0` (Chatwoot router scoped five-header HMAC outbound)
 
 Odoo 15 addon that powers the Tommasi sales reactivation LangGraph agent: configuration, CRM customization, seller-scoped security, and seven MCP tools exposed through the integrated Odoo MCP server.
 
@@ -21,7 +21,6 @@ LangGraph detection agents call this module's `llm.tool` surface — they never 
 | `service_create_guards.py` | CRM create with savepoints, row locks, v2 outcomes |
 | `service_whatsapp.py` | Partner WhatsApp outbound via Chatwoot router (`send_whatsapp_to_partner`) |
 | `service_products.py` / `service_rendering.py` | Stock, pricelist, digest copy (internal) |
-| `tommasi_reactivation_facts_snapshot.py` | Nightly facts materialization cron |
 
 ## Overview
 
@@ -30,7 +29,6 @@ LangGraph detection agents call this module's `llm.tool` surface — they never 
 | **Configuration** | Per-company singleton with operational parameters, enabled sellers, and priority rules |
 | **CRM** | Custom pipeline stages and reactivation metadata on `crm.lead` |
 | **MCP tools** | Seven `@llm_tool` methods on `tommasi.reactivation.service` for cycle bootstrap, candidate pre-filtering, detection, recommendations, CRM writes, and partner WhatsApp outbound. Four tools accept retrocompatible batch parameters (`include_context`, `customer_ids[]`, `payloads[]`) to reduce detection-cycle MCP calls from O(customers) to O(sellers) |
-| **Facts snapshot** | Nightly `ir.cron` materializes invoice aggregates into `tommasi.reactivation.facts.snapshot`; read tools prefer fresh snapshots and fall back to live SQL |
 | **Security** | *Reactivation Agent* group with seller-scoped record rules driven by `reactivation_seller_id` in context |
 
 ## Prerequisites
@@ -46,7 +44,7 @@ Install and configure these modules first:
 
 Open **LLM → Configuration → Sales reactivation** (requires *LLM Manager*).
 
-WhatsApp outbound routing is configured separately under **LLM → Configuration → WhatsApp** (`tommasi.whatsapp.config`, one active row per company). It stores the Chatwoot router base URL, outbound API key, Chatwoot account/inbox IDs, and HTTP timeout. This is independent from sales reactivation settings.
+WhatsApp outbound routing is configured separately under **LLM → Configuration → WhatsApp** (`tommasi.whatsapp.config`, one active row per company). It stores the Chatwoot router base URL, scoped outbound credentials (`outbound_key_id`, `outbound_api_key`, `outbound_hmac_secret`), Chatwoot account/inbox IDs that must match the router credential scope, and HTTP timeout. Credential fields are **LLM Manager** only; the reactivation agent has no direct config read. This is independent from sales reactivation settings.
 
 The singleton `tommasi.reactivation.config` record controls:
 
@@ -72,7 +70,7 @@ All tools are registered on `tommasi.reactivation.service` via `@llm_tool` from 
 | Tool | Type | Purpose |
 |------|------|---------|
 | `bootstrap_reactivation_cycle` | read | First call of a detection cycle — config, priority rules, enabled sellers, and their customers |
-| `get_reactivation_candidates` | read | Batch-screens a seller's portfolio (~4 aggregate SQL queries) for inactivity, revenue/qty decline, or undelivered SO lines, to shortlist customers before per-customer detection |
+| `get_reactivation_candidates` | read | Batch-screens a seller's portfolio (aggregate SQL + one invoice-facts batch) for inactivity, revenue/qty decline, undelivered SO lines, or product drop-off |
 | `get_customer_detection_context` | read | Sales history, inactivity, product history, volume decline with stock, undelivered SO lines |
 | `get_product_recommendations` | read | Ranked product suggestions with stock, net pricelist price, pricelist discount reference, and reason tier |
 | `create_crm_opportunity` | write | Create a reactivation opportunity in *Pendiente de revisión* with server-side validation |
@@ -100,7 +98,23 @@ The LangGraph reactivation agent unwraps strictly via `{data: ...}`; golden exam
 
 ### `send_whatsapp_to_partner`
 
-Generic outbound WhatsApp send for any consented partner. Callers supply `partner_id`, explicit `company_id`, and router `template_params`; Odoo resolves the partner mobile, selects the per-company WhatsApp config, and POSTs to `POST /v1/outbound/messages` with `X-Outbound-Api-Key`.
+Generic outbound WhatsApp send for any consented partner. Callers supply `partner_id`, explicit `company_id`, and router `template_params`; Odoo resolves the partner mobile, selects the per-company WhatsApp config, and POSTs to `POST /v1/outbound/messages` with the router’s **scoped five-header HMAC** contract (not API-key-only).
+
+**Auth overview (happy path)**
+
+1. Serialize the JSON body once (compact UTF-8 bytes).
+2. Sign those exact bytes with HMAC-SHA256 using `outbound_hmac_secret`.
+3. Send `data=<body_bytes>` with:
+
+| Header | Source |
+|--------|--------|
+| `X-Outbound-Key-Id` | `outbound_key_id` |
+| `X-Outbound-Api-Key` | `outbound_api_key` |
+| `X-Timestamp` | Fresh epoch seconds per HTTP attempt |
+| `X-Nonce` | Fresh unique token per HTTP attempt |
+| `X-Signature` | Lowercase hex HMAC over method, path, key id, timestamp, nonce, body SHA-256 |
+
+Business retries keep the same body `idempotency_key` but always generate a new timestamp/nonce/signature. Incomplete credentials (blank key id, API key, or HMAC secret) are rejected before HTTP with a non-retryable configuration error.
 
 **Consent and phone rules**
 
@@ -141,6 +155,8 @@ Generic outbound WhatsApp send for any consented partner. Callers supply `partne
 }
 ```
 
+A successful test send returns HTTP `200` with both `conversation_id` and `message_id`.
+
 **Failure statuses**
 
 | Status | Meaning |
@@ -149,13 +165,42 @@ Generic outbound WhatsApp send for any consented partner. Callers supply `partne
 | `rejected_invalid_mobile` | Missing or non-E.164 mobile |
 | `rejected_no_consent` | `allow_whatsapp_communication` is false |
 | `rejected_company_mismatch` | Partner company does not match `company_id` |
-| `rejected_no_config` | No active `tommasi.whatsapp.config` for the company |
+| `rejected_no_config` | No active config, or incomplete outbound credentials |
 | `rejected_invalid_template` | `template_params` shape invalid before HTTP |
 | `error` | Router/transport failure; see `http_status`, `retryable`, and `error` |
 
-Router `409` (concurrent idempotency) sets `retryable: true` — callers should retry with the same `idempotency_key`. Odoo does not auto-retry side-effecting POSTs.
+HTTP mapping of note:
 
-Audit rows are stored in `tommasi.whatsapp.log` (template name/language and outcome only — no API key or `processed_params` values).
+| `http_status` | Meaning | `retryable` |
+|---------------|---------|-------------|
+| `401` | Generic authentication failure (bad/missing headers, key, signature, nonce, or timestamp) | `false` |
+| `403` | Credential account/inbox **scope mismatch** | `false` |
+| `409` | Concurrent idempotency — retry with the same `idempotency_key` | `true` |
+| `502` / `503` | Temporary router/Chatwoot unavailability | `true` |
+
+Odoo does not auto-retry side-effecting POSTs. Secrets, signatures, nonces, and raw bodies are never logged.
+
+Audit rows are stored in `tommasi.whatsapp.log` (template name/language and outcome only — no key ids, API keys, HMAC secrets, signatures, nonces, or `processed_params` values).
+
+### WhatsApp credential provisioning and rotation
+
+Provision credentials in **chatwoot-router-api**, then copy the one-time plaintext into the matching Odoo company config. Account/inbox IDs in Odoo must match the router credential scope.
+
+**Quick path**
+
+1. Upgrade this addon so the credential fields exist.
+2. From `chatwoot-router-api/` (venv + `ROUTER_HMAC_ENCRYPTION_KEY` + router DB URL):
+
+```bash
+.venv/bin/python scripts/manage_outbound_credentials.py create \
+  --account-id 1 --inbox-id 5
+```
+
+3. Copy the printed one-time `key_id`, API key, and HMAC secret into **LLM → Configuration → WhatsApp** for that company; set `chatwoot_account_id` / `chatwoot_inbox_id` to the same scope.
+4. Send a test template (`send_whatsapp_to_partner` or equivalent). Expect `200` + `conversation_id` / `message_id`. Wrong scope → non-retryable `403`.
+5. **Rotate:** create a replacement router credential → update Odoo → validate a send → `manage_outbound_credentials.py disable --id <old_internal_id>`.
+
+`create` prints secrets once; `list` returns metadata only and cannot recover them. The MCP agent never needs direct access to `tommasi.whatsapp.config` — the WhatsApp service loads credentials with `sudo()` internally.
 
 ### Agent vs Odoo guard semantics
 
@@ -188,31 +233,7 @@ When `include_context=true`, each shortlisted candidate also includes a `detecti
 
 This collapses portfolio pre-screen + per-customer context reads into **S** calls (one per seller) instead of S×C. Per-customer assembly failures return `detection_context: { "message": "…" }` without aborting the batch. `get_customer_detection_context` remains available for per-customer retry when embedded context returns `{message}`.
 
-Prescreen metrics (`days_inactive`, `revenue_change_pct`, `qty_change_pct`) prefer fresh snapshot rows when available; `undelivered_so_lines` is always read live.
-
-### Nightly facts snapshot
-
-A nightly `ir.cron` (`cron_refresh_facts_snapshots`) materializes expensive invoice aggregates for bootstrap-qualified partners into `tommasi.reactivation.facts.snapshot`.
-
-**Materialized per row**: `last_purchase_date`, `revenue_prior`, `revenue_recent`, `revenue_change_pct`, `qty_change_pct`, `sales_history_json`, `product_history_json`, plus freshness metadata (`computed_at`, `date_from`, `date_to`, `config_hash`).
-
-**Snapshot-first read path**: `_get_fresh_snapshots()` returns a row only when:
-
-1. `computed_at` is **< 24 hours** old,
-2. `config_hash` matches the current config (`inactivity_days_*`, `bootstrap_min_invoices`, `bootstrap_invoice_window_days`), and
-3. stored `date_from` / `date_to` match the tool's resolved detection window.
-
-When no fresh snapshot exists, tools fall back to live SQL (`_get_invoice_facts`, `_candidate_*_batch`, etc.).
-
-The nightly cron batches invoice-fact reads per seller (`_get_invoice_facts_batch`) so history materialization stays O(1) SQL round-trips per seller rather than O(partners). Batch `get_agent_opportunities` resolves `stage_xml_id` values in one `ir.model.data` lookup per call.
-
-**Always live** (never snapshotted — change intraday):
-
-- `undelivered_so_lines` (90-day `sale.order.date_order` window)
-- Stock quantities (`_get_product_stock_batch`, `volume_decline_with_stock`)
-- Pricelist resolution at recommendation/create time
-
-The cron upserts rows for all bootstrap-qualified partners per enabled seller and deletes stale rows when a partner drops out of the bootstrap universe.
+Prescreen metrics (`days_inactive`, `revenue_change_pct`, `qty_change_pct`) come from live half-window SQL. Product drop-off screening uses one `_get_invoice_facts_batch` per seller (window: `min(detection date_from, 365-day floor)` through `date_to`), then `_get_product_history` + `_annotate_product_dropoff`. When `include_context=true`, those prefetched facts are passed into `_build_detection_context` so shortlisted customers skip a second `_get_invoice_facts`. Undelivered SO lines and stock quantities are always read live.
 
 ## Agent security
 
@@ -252,22 +273,21 @@ Two custom stages are installed (native *Won* stage is reused for closed-won):
 | `tommasi.reactivation.config` | Per-company singleton (not deletable; idempotent create) |
 | `tommasi.reactivation.seller` | Enabled seller lines linked to config |
 | `tommasi.reactivation.priority.rule` | Priority cap-order rules |
-| `tommasi.reactivation.facts.snapshot` | Nightly materialized invoice aggregates for snapshot-first reads |
-| `tommasi.whatsapp.config` | Per-company Chatwoot router outbound settings |
+| `tommasi.whatsapp.config` | Per-company Chatwoot router outbound settings (scoped HMAC credentials, manager-only) |
 | `tommasi.whatsapp.log` | Sanitized audit log for WhatsApp sends |
 | `tommasi.reactivation.service` | Abstract model hosting MCP tools and internal helpers |
 
 ## Testing
 
-Post-install tests cover configuration, CRM fields and stages, seller-scoped security, MCP transport contracts, batch tools, snapshots, WhatsApp outbound, and all seven MCP tools:
+Post-install tests cover configuration, CRM fields and stages, seller-scoped security, MCP transport contracts, batch tools, WhatsApp outbound, and all seven MCP tools:
 
 ```bash
 # From the Doodba project root — full module
-invoke test --cur-file odoo/custom/src/tommasi_addons/tommasi_sales_reactivation
+invoke test -m tommasi_sales_reactivation
 
 # Scoped examples
-invoke test --cur-file odoo/custom/src/tommasi_addons/tommasi_sales_reactivation/tests/test_mcp_transport_contract.py
-invoke test --cur-file odoo/custom/src/tommasi_addons/tommasi_sales_reactivation/tests/test_reactivation_snapshot.py
+invoke test --cur-file odoo/custom/src/otros/tommasi_sales_reactivation/tests/test_mcp_transport_contract.py
+invoke test --cur-file odoo/custom/src/otros/tommasi_sales_reactivation/tests/test_reactivation_candidates.py
 ```
 
 Test modules:
@@ -278,15 +298,14 @@ Test modules:
 | `test_crm_lead.py` | Reactivation fields, opportunity reference ID uniqueness, custom stages |
 | `test_reactivation_security.py` | Context-scoped record rules for partners and leads |
 | `test_reactivation_bootstrap_detection.py` | Bootstrap, detection context, query-count bounds |
-| `test_reactivation_candidates.py` | Candidate screening, bootstrap filtering, overstock cache |
+| `test_reactivation_candidates.py` | Candidate screening (incl. live dropoff-only), bootstrap filtering, overstock cache |
 | `test_reactivation_batch.py` | Batch MCP tools, stage XML-ID lookup caching |
 | `test_reactivation_recommendations.py` | Product ranking and batch recommendations |
 | `test_reactivation_crm_create.py` | Scalar and batch CRM create |
 | `test_reactivation_create_safety.py` | Write guards, cooldown, seller cap, idempotency |
-| `test_reactivation_snapshot.py` | Nightly cron, snapshot parity, batch invoice facts |
 | `test_reactivation_rendering.py` | Digest and opportunity description rendering |
 | `test_reactivation_multicompany.py` | Company-scoped config and seller isolation |
-| `test_reactivation_whatsapp.py` | WhatsApp config, outbound contract, consent, audit sanitization |
+| `test_reactivation_whatsapp.py` | WhatsApp config, five-header HMAC outbound, consent, audit sanitization |
 | `test_mcp_transport_contract.py` | Envelope shape for Agent-used MCP tools + golden fixture parity |
 | `mcp_contract.py` | Shared contract assertions (imported by transport tests) |
 

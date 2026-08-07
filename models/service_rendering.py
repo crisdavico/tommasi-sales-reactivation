@@ -30,8 +30,17 @@ EVIDENCE_DATE_KEYS = frozenset(
 class TommasiReactivationServiceRendering(models.AbstractModel):
     _inherit = "tommasi.reactivation.service"
 
-    def _render_odoo_html_table(self, headers, body_rows):
-        """Render a table using Odoo HTML editor conventions (web_editor)."""
+    def _render_odoo_html_table(self, headers, body_rows, row_limit=None):
+        """Render a table using Odoo HTML editor conventions (web_editor).
+
+        ``row_limit=None`` uses ``config.tables_row_limit``. Pass ``False`` (or
+        ``0``) to skip truncation — used by suggested products, which are
+        capped by ``suggested_products_max`` upstream.
+        """
+        if row_limit is None:
+            row_limit = self._get_config().tables_row_limit
+        if row_limit:
+            body_rows = list(body_rows)[: int(row_limit)]
         header_html = "".join("<th>%s</th>" % header for header in headers)
         rows_html = []
         for row in body_rows:
@@ -727,7 +736,9 @@ class TommasiReactivationServiceRendering(models.AbstractModel):
             )
         return (
             "<h3>Productos sugeridos</h3>"
-            + self._render_odoo_html_table(headers, body_rows)
+            + self._render_odoo_html_table(
+                headers, body_rows, row_limit=False
+            )
         )
 
     def _render_opportunity_description(self, payload, config=None, stock_batch=None):

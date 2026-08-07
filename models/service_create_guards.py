@@ -4,6 +4,7 @@ from psycopg2 import IntegrityError
 
 from odoo import _, fields, models
 from odoo.exceptions import UserError
+from odoo.tools.mail import html2plaintext
 
 from odoo.addons.llm_tool.decorators import llm_tool
 
@@ -104,6 +105,19 @@ class TommasiReactivationCreateGuards(models.AbstractModel):
         cutoff = fields.Datetime.now() - timedelta(days=cooldown_days)
         return fields.Datetime.to_datetime(create_date) >= cutoff
 
+    def _crm_lead_form_url(self, opportunity_id):
+        """Build an Odoo form URL for a crm.lead record."""
+        base_url = (
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param("web.base.url", "")
+            or ""
+        ).rstrip("/")
+        return "%s/web#id=%s&model=crm.lead&view_type=form" % (
+            base_url,
+            opportunity_id,
+        )
+
     def _v2_create_result(
         self,
         outcome,
@@ -123,6 +137,7 @@ class TommasiReactivationCreateGuards(models.AbstractModel):
             result["operation_key"] = operation_key
         if opportunity_id:
             result["opportunity_id"] = opportunity_id
+            result["opportunity_url"] = self._crm_lead_form_url(opportunity_id)
         if attribution_id:
             result["attribution_id"] = attribution_id
         if reason:
@@ -334,6 +349,17 @@ class TommasiReactivationCreateGuards(models.AbstractModel):
             description_payload["suggested_products"],
             config=config,
         )
+        evidence_payload = dict(description_payload)
+        customer_id = data.get("customer_id")
+        seller_id = data.get("seller_id")
+        if customer_id and seller_id:
+            evidence_payload = self._enrich_evidence_dates(
+                evidence_payload, customer_id, seller_id, config=config
+            )
+        evidence_html = self._render_evidence_section_html(evidence_payload)
+        evidence_summary = (
+            html2plaintext(evidence_html).strip() if evidence_html else ""
+        )
         company = config.company_id
         lead_model = self._lead_model_for_seller(data["seller_id"])
         create_vals = {
@@ -354,6 +380,7 @@ class TommasiReactivationCreateGuards(models.AbstractModel):
             "reactivation_confidence": data.get("confidence"),
             "reactivation_cycle_id": data.get("cycle_id"),
             "reactivation_client_message": description_payload["client_message"],
+            "reactivation_evidence_summary": evidence_summary,
         }
         if operation_key:
             create_vals["reactivation_operation_key"] = operation_key

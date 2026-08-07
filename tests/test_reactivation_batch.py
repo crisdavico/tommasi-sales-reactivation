@@ -186,6 +186,7 @@ class TestReactivationServiceBatch(TransactionCase):
                     "reactivation_is_agent": True,
                     "reactivation_attribution_id": "batch-attr-%s" % customer.id,
                     "reactivation_client_message": "Hola %s" % customer.name,
+                    "reactivation_evidence_summary": "Evidencia %s" % customer.name,
                 }
             )
         )
@@ -206,6 +207,10 @@ class TestReactivationServiceBatch(TransactionCase):
         self.assertEqual(result["opportunities"][0]["opportunity_id"], lead.id)
         self.assertEqual(
             result["opportunities"][0]["client_message"], "Hola %s" % self.customer.name
+        )
+        self.assertEqual(
+            result["opportunities"][0]["evidence_summary"],
+            "Evidencia %s" % self.customer.name,
         )
 
     def test_batch_get_agent_opportunities_grouped_results(self):

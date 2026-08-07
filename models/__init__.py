@@ -6,11 +6,9 @@ from . import tommasi_reactivation_demo
 from . import tommasi_reactivation_priority_rule
 from . import tommasi_reactivation_seller
 from . import tommasi_reactivation_service
-from . import tommasi_reactivation_facts_snapshot
 from . import service_sellers
 from . import service_products
 from . import service_facts
-from . import service_snapshot
 from . import service_bootstrap
 from . import service_detection
 from . import service_candidates

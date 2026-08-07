@@ -212,6 +212,16 @@ class TestReactivationCrmCreate(ReactivationServiceTestMixin, TransactionCase):
         self.assertIn('class="table table-bordered"', description)
         self.assertIn("<thead>", description)
         self.assertIn("<tbody>", description)
+        evidence_summary = lead.reactivation_evidence_summary or ""
+        self.assertIn("Disparadores:", evidence_summary)
+        self.assertIn("Inactividad", evidence_summary)
+        self.assertIn("Pedidos pendientes sin entregar", evidence_summary)
+        self.assertIn("141 días desde la última compra", evidence_summary)
+        self.assertIn("S236661", evidence_summary)
+        self.assertIn("IK16", evidence_summary)
+        self.assertNotRegex(evidence_summary, r"</?[a-zA-Z][^>]*>")
+        self.assertNotIn("Productos sugeridos", evidence_summary)
+        self.assertNotIn("Mensaje al cliente", evidence_summary)
 
     def test_create_crm_opportunity_accepts_evidence_dict(self):
         self._add_product_stock(self.product)
@@ -226,6 +236,12 @@ class TestReactivationCrmCreate(ReactivationServiceTestMixin, TransactionCase):
         description = lead.description or ""
         self.assertIn("47 días desde la última compra", description)
         self.assertIn("nivel de inactividad primario", description)
+        evidence_summary = lead.reactivation_evidence_summary or ""
+        self.assertIn("47 días desde la última compra", evidence_summary)
+        self.assertIn("nivel de inactividad primario", evidence_summary)
+        self.assertNotRegex(evidence_summary, r"</?[a-zA-Z][^>]*>")
+        self.assertNotIn("Productos sugeridos", evidence_summary)
+        self.assertNotIn("Mensaje al cliente", evidence_summary)
 
     def test_create_crm_opportunity_formats_shorthand_evidence_json(self):
         self._add_product_stock(self.product)
@@ -238,6 +254,11 @@ class TestReactivationCrmCreate(ReactivationServiceTestMixin, TransactionCase):
         self.assertIn("50 días desde la última compra", description)
         self.assertIn("nivel de inactividad secundario", description)
         self.assertNotIn('{"days_inactive"', description)
+        evidence_summary = lead.reactivation_evidence_summary or ""
+        self.assertIn("50 días desde la última compra", evidence_summary)
+        self.assertIn("nivel de inactividad secundario", evidence_summary)
+        self.assertNotIn('{"days_inactive"', evidence_summary)
+        self.assertNotRegex(evidence_summary, r"</?[a-zA-Z][^>]*>")
 
     def test_create_crm_opportunity_formats_client_message_prices(self):
         self._add_product_stock(self.product)

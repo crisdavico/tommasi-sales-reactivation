@@ -1,3 +1,6 @@
+import hashlib
+import hmac
+import json
 from unittest.mock import Mock, patch
 
 import requests
@@ -17,14 +20,20 @@ from odoo.addons.tommasi_sales_reactivation.tests.mcp_contract import (
     assert_tool_contract,
 )
 
+_SERVICE_WHATSAPP = (
+    "odoo.addons.tommasi_sales_reactivation.models.service_whatsapp"
+)
 
-def _template_params():
-    return {
+
+def _template_params(**overrides):
+    params = {
         "name": "order_confirmation",
         "category": "UTILITY",
         "language": "es",
         "processed_params": {"body": {"1": "121212"}},
     }
+    params.update(overrides)
+    return params
 
 
 def _mock_response(status_code, json_body=None, content=None):
@@ -40,6 +49,36 @@ def _mock_response(status_code, json_body=None, content=None):
         response.json.return_value = {}
         response.content = b""
     return response
+
+
+def _compact_body_bytes(payload):
+    return json.dumps(
+        payload, separators=(",", ":"), ensure_ascii=False
+    ).encode("utf-8")
+
+
+def _expected_outbound_signature(secret, key_id, timestamp, nonce, body_bytes):
+    body_sha256_hex = hashlib.sha256(body_bytes).hexdigest()
+    sign_string = "\n".join(
+        (
+            "POST",
+            "/v1/outbound/messages",
+            key_id,
+            timestamp,
+            nonce,
+            body_sha256_hex,
+        )
+    )
+    return hmac.new(
+        secret.encode(),
+        sign_string.encode(),
+        hashlib.sha256,
+    ).hexdigest()
+
+
+class _FixedUUID:
+    def __init__(self, hex_value):
+        self.hex = hex_value
 
 
 @tagged("post_install", "-at_install")
@@ -60,7 +99,9 @@ class TestWhatsappConfig(TransactionCase):
             "name": "WhatsApp test",
             "company_id": self.env.company.id,
             "router_base_url": "https://router.test",
-            "outbound_api_key": "secret-key",
+            "outbound_key_id": "out_test_config",
+            "outbound_api_key": "test-outbound-api-key-000000000001",
+            "outbound_hmac_secret": "test-outbound-hmac-secret-00000001",
             "chatwoot_account_id": 1,
             "chatwoot_inbox_id": 5,
             "http_timeout_seconds": 30,
@@ -93,6 +134,31 @@ class TestWhatsappConfig(TransactionCase):
         with self.assertRaises(ValidationError):
             self.WhatsappConfig.create(self._config_vals(http_timeout_seconds=3))
 
+    def test_outbound_credential_token_validation(self):
+        with self.assertRaises(ValidationError):
+            self.WhatsappConfig.create(
+                self._config_vals(outbound_key_id="bad key!")
+            )
+        with self.assertRaises(ValidationError):
+            self.WhatsappConfig.create(
+                self._config_vals(outbound_api_key="too-short")
+            )
+        with self.assertRaises(ValidationError):
+            self.WhatsappConfig.create(
+                self._config_vals(outbound_hmac_secret="short")
+            )
+
+    def test_outbound_credentials_may_be_blank_on_new_fields(self):
+        # Upgrade path: new HMAC fields stay optional until backfill.
+        config = self.WhatsappConfig.create(
+            self._config_vals(
+                company_id=self.company_b.id,
+                outbound_key_id=False,
+                outbound_hmac_secret=False,
+            )
+        )
+        self.assertFalse(config._has_complete_outbound_credentials())
+
 
 @tagged("post_install", "-at_install")
 class TestReactivationWhatsapp(ReactivationServiceTestMixin, TransactionCase):
@@ -112,7 +178,9 @@ class TestReactivationWhatsapp(ReactivationServiceTestMixin, TransactionCase):
                 "name": "Main WhatsApp",
                 "company_id": cls.env.company.id,
                 "router_base_url": "https://router.test",
-                "outbound_api_key": "outbound-secret",
+                "outbound_key_id": "out_test_main",
+                "outbound_api_key": "test-outbound-api-key-000000000001",
+                "outbound_hmac_secret": "test-outbound-hmac-secret-00000001",
                 "chatwoot_account_id": 1,
                 "chatwoot_inbox_id": 5,
             }
@@ -122,7 +190,9 @@ class TestReactivationWhatsapp(ReactivationServiceTestMixin, TransactionCase):
                 "name": "Company B WhatsApp",
                 "company_id": cls.company_b.id,
                 "router_base_url": "https://router-b.test",
-                "outbound_api_key": "outbound-secret-b",
+                "outbound_key_id": "out_test_company_b",
+                "outbound_api_key": "test-outbound-api-key-00000000000b",
+                "outbound_hmac_secret": "test-outbound-hmac-secret-0000000b",
                 "chatwoot_account_id": 2,
                 "chatwoot_inbox_id": 8,
             }
@@ -250,6 +320,17 @@ class TestReactivationWhatsapp(ReactivationServiceTestMixin, TransactionCase):
         data = unwrap_tool_result(self._send())
         self.assertEqual(data["status"], "rejected_no_config")
 
+    def test_rejects_incomplete_outbound_credentials(self):
+        self.whatsapp_config.write({"outbound_hmac_secret": False})
+        with patch("%s.requests.post" % _SERVICE_WHATSAPP) as mocked_post:
+            raw = self._send()
+            mocked_post.assert_not_called()
+        data = unwrap_tool_result(raw)
+        self.assertEqual(data["status"], "rejected_no_config")
+        self.assertFalse(data["retryable"])
+        self.assertIn("incomplete", (data["error"] or "").lower())
+        assert_mcp_envelope(raw)
+
     def test_maps_router_409_as_retryable(self):
         response = _mock_response(409, {"detail": "pending"})
         with patch.object(
@@ -269,13 +350,42 @@ class TestReactivationWhatsapp(ReactivationServiceTestMixin, TransactionCase):
         self.assertFalse(data["retryable"])
 
     def test_maps_router_401(self):
-        response = _mock_response(401, {"detail": "bad api key"})
+        response = _mock_response(
+            401, {"detail": "bad api_key=super-secret hmac nonce"}
+        )
         with patch.object(
             type(self.Service), "_post_outbound_message", return_value=response
         ):
             data = unwrap_tool_result(self._send())
         self.assertEqual(data["http_status"], 401)
+        self.assertEqual(data["status"], "error")
         self.assertFalse(data["retryable"])
+        error = data["error"] or ""
+        self.assertIn("authentication", error.lower())
+        self.assertNotIn("super-secret", error)
+        self.assertNotIn("api_key", error.lower())
+        self.assertNotIn("hmac", error.lower())
+        self.assertNotIn("nonce", error.lower())
+
+    def test_maps_router_403_scope_mismatch(self):
+        response = _mock_response(
+            403, {"detail": "credential scope mismatch for account"}
+        )
+        with patch.object(
+            type(self.Service), "_post_outbound_message", return_value=response
+        ):
+            raw = self._send()
+        assert_mcp_envelope(raw)
+        data = unwrap_tool_result(raw)
+        self.assertEqual(data["status"], "error")
+        self.assertEqual(data["http_status"], 403)
+        self.assertFalse(data["retryable"])
+        error = (data["error"] or "").lower()
+        self.assertTrue(
+            "account" in error or "inbox" in error,
+            "403 error should mention account/inbox scope",
+        )
+        self.assertNotIn("credential scope mismatch", error)
 
     def test_maps_router_502_and_503_as_retryable(self):
         for status in (502, 503):
@@ -373,3 +483,110 @@ class TestReactivationWhatsapp(ReactivationServiceTestMixin, TransactionCase):
             "error",
         ):
             self.assertIn(key, data)
+
+    def test_signed_transport_posts_compact_unicode_body_and_headers(self):
+        """Assert build-once bytes, data= (not json=), five auth headers, HMAC."""
+        content = "Hola José — reactivación"
+        template_params = _template_params(
+            processed_params={"body": {"1": "Señoría"}}
+        )
+        expected_payload = {
+            "account_id": 1,
+            "inbox_id": 5,
+            "phone": "+5491112345678",
+            "template_params": template_params,
+            "content": content,
+            "idempotency_key": "opp-unicode-1",
+        }
+        body_bytes = _compact_body_bytes(expected_payload)
+        self.assertIn("José".encode("utf-8"), body_bytes)
+        self.assertIn("Señoría".encode("utf-8"), body_bytes)
+        self.assertNotIn(b"\\u", body_bytes)
+
+        fixed_ts = 1700000000
+        fixed_nonce = "a" * 32
+        expected_sig = _expected_outbound_signature(
+            self.whatsapp_config.outbound_hmac_secret,
+            self.whatsapp_config.outbound_key_id,
+            str(fixed_ts),
+            fixed_nonce,
+            body_bytes,
+        )
+        response = _mock_response(
+            200, {"conversation_id": 42, "message_id": 99}
+        )
+        with patch(
+            "%s.requests.post" % _SERVICE_WHATSAPP, return_value=response
+        ) as mocked_post, patch(
+            "%s.time.time" % _SERVICE_WHATSAPP, return_value=fixed_ts
+        ), patch(
+            "%s.uuid.uuid4" % _SERVICE_WHATSAPP,
+            return_value=_FixedUUID(fixed_nonce),
+        ):
+            raw = self._send(
+                template_params=template_params,
+                content=content,
+                idempotency_key="opp-unicode-1",
+            )
+
+        mocked_post.assert_called_once()
+        args, kwargs = mocked_post.call_args
+        self.assertEqual(
+            args[0], "https://router.test/v1/outbound/messages"
+        )
+        self.assertEqual(kwargs.get("data"), body_bytes)
+        self.assertNotIn("json", kwargs)
+        headers = kwargs["headers"]
+        self.assertEqual(headers["Content-Type"], "application/json")
+        self.assertEqual(
+            headers["X-Outbound-Key-Id"], self.whatsapp_config.outbound_key_id
+        )
+        self.assertEqual(
+            headers["X-Outbound-Api-Key"], self.whatsapp_config.outbound_api_key
+        )
+        self.assertEqual(headers["X-Timestamp"], str(fixed_ts))
+        self.assertEqual(headers["X-Nonce"], fixed_nonce)
+        self.assertEqual(headers["X-Signature"], expected_sig)
+        assert_tool_contract("send_whatsapp_to_partner", raw)
+        data = unwrap_tool_result(raw)
+        self.assertEqual(data["status"], "sent")
+        self.assertEqual(data["conversation_id"], 42)
+        self.assertEqual(data["message_id"], 99)
+
+    def test_fresh_nonce_across_http_attempts_keeps_idempotency_key(self):
+        """Business idempotency_key stays in body; HMAC nonce changes per attempt."""
+        response = _mock_response(
+            200, {"conversation_id": 1, "message_id": 2}
+        )
+        nonces = ["b" * 32, "c" * 32]
+        timestamps = [1700000001, 1700000002]
+        with patch(
+            "%s.requests.post" % _SERVICE_WHATSAPP, return_value=response
+        ) as mocked_post, patch(
+            "%s.time.time" % _SERVICE_WHATSAPP, side_effect=timestamps
+        ), patch(
+            "%s.uuid.uuid4" % _SERVICE_WHATSAPP,
+            side_effect=[_FixedUUID(n) for n in nonces],
+        ):
+            self._send(idempotency_key="stable-business-key")
+            self._send(idempotency_key="stable-business-key")
+
+        self.assertEqual(mocked_post.call_count, 2)
+        bodies = []
+        seen_nonces = []
+        for call in mocked_post.call_args_list:
+            _args, kwargs = call
+            bodies.append(kwargs["data"])
+            seen_nonces.append(kwargs["headers"]["X-Nonce"])
+            payload = json.loads(kwargs["data"].decode("utf-8"))
+            self.assertEqual(payload["idempotency_key"], "stable-business-key")
+            self.assertEqual(payload["account_id"], 1)
+            self.assertEqual(payload["inbox_id"], 5)
+            self.assertEqual(payload["phone"], "+5491112345678")
+            self.assertEqual(payload["template_params"], _template_params())
+        self.assertEqual(seen_nonces, nonces)
+        self.assertEqual(bodies[0], bodies[1])
+        self.assertNotEqual(
+            mocked_post.call_args_list[0][1]["headers"]["X-Signature"],
+            mocked_post.call_args_list[1][1]["headers"]["X-Signature"],
+        )

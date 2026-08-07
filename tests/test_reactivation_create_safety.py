@@ -116,6 +116,18 @@ class TestReactivationCreateSafety(TransactionCase):
         lead = self.env["crm.lead"].browse(result["opportunity_id"])
         self.assertEqual(lead.reactivation_operation_key, self._operation_key())
 
+    def test_v2_create_includes_opportunity_url(self):
+        result = self._service().create_crm_opportunity(
+            payload=self._valid_create_payload()
+        )
+        self.assertEqual(result["outcome"], "created")
+        opportunity_id = result["opportunity_id"]
+        opportunity_url = result.get("opportunity_url")
+        self.assertTrue(opportunity_url)
+        self.assertIn("crm.lead", opportunity_url)
+        self.assertIn("id=%s" % opportunity_id, opportunity_url)
+        self.assertIn("view_type=form", opportunity_url)
+
     def test_v2_idempotent_replay_returns_existing(self):
         first = self._service().create_crm_opportunity(
             payload=self._valid_create_payload()
@@ -126,6 +138,11 @@ class TestReactivationCreateSafety(TransactionCase):
         self.assertEqual(first["outcome"], "created")
         self.assertEqual(second["outcome"], "existing")
         self.assertEqual(second["opportunity_id"], first["opportunity_id"])
+        self.assertTrue(second.get("opportunity_url"))
+        self.assertIn(
+            "id=%s" % second["opportunity_id"],
+            second["opportunity_url"],
+        )
         self.assertEqual(
             self.env["crm.lead"].search_count(
                 [

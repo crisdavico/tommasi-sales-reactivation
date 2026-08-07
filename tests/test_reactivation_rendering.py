@@ -1,4 +1,5 @@
 import json
+import re
 import threading
 from datetime import date, timedelta
 
@@ -503,6 +504,105 @@ class TestReactivationRendering(ReactivationServiceTestMixin, TransactionCase):
         )
         self.assertNotIn(">dropoff</td>", html)
         self.assertNotIn(">similar_category</td>", html)
+
+    def test_render_tables_respect_tables_row_limit(self):
+        config = self.Config.get_singleton()
+        config.write({"tables_row_limit": 2})
+        service = self._service()
+        html = service._render_evidence_section_html(
+            {
+                "evidence": {
+                    "triggers": ["volume_decline_with_stock"],
+                    "details": {
+                        "volume_decline_with_stock": {
+                            "items": [
+                                {
+                                    "sku": "ROW-001",
+                                    "name": "Producto uno",
+                                    "prior_quantity": 5.0,
+                                    "recent_quantity": 1.0,
+                                    "available_qty": 10.0,
+                                },
+                                {
+                                    "sku": "ROW-002",
+                                    "name": "Producto dos",
+                                    "prior_quantity": 4.0,
+                                    "recent_quantity": 0.0,
+                                    "available_qty": 8.0,
+                                },
+                                {
+                                    "sku": "ROW-003",
+                                    "name": "Producto tres",
+                                    "prior_quantity": 3.0,
+                                    "recent_quantity": 0.0,
+                                    "available_qty": 6.0,
+                                },
+                            ]
+                        }
+                    },
+                }
+            }
+        )
+        tbody = re.search(r"<tbody>(.*?)</tbody>", html, re.DOTALL).group(1)
+        self.assertEqual(tbody.count("<tr>"), 2)
+        self.assertIn("ROW-001", html)
+        self.assertIn("ROW-002", html)
+        self.assertNotIn("ROW-003", html)
+
+        suggested_html = service._render_suggested_products_section_html(
+            [
+                {
+                    "product_id": self.product.id,
+                    "sku": "SUG-001",
+                    "name": "Sugerido uno",
+                    "list_price": 100.0,
+                    "available_qty": 10.0,
+                    "reason_tier": "dropoff",
+                },
+                {
+                    "product_id": self.product.id,
+                    "sku": "SUG-002",
+                    "name": "Sugerido dos",
+                    "list_price": 90.0,
+                    "available_qty": 9.0,
+                    "reason_tier": "dropoff",
+                },
+                {
+                    "product_id": self.product.id,
+                    "sku": "SUG-003",
+                    "name": "Sugerido tres",
+                    "list_price": 80.0,
+                    "available_qty": 8.0,
+                    "reason_tier": "dropoff",
+                },
+            ],
+            {self.product.id: {"available_qty": 10.0}},
+            config=config,
+        )
+        suggested_tbody = re.search(
+            r"<tbody>(.*?)</tbody>", suggested_html, re.DOTALL
+        ).group(1)
+        self.assertEqual(suggested_tbody.count("<tr>"), 3)
+        self.assertIn("SUG-001", suggested_html)
+        self.assertIn("SUG-002", suggested_html)
+        self.assertIn("SUG-003", suggested_html)
+
+        inactivity_html = service._render_evidence_section_html(
+            {
+                "evidence": {
+                    "triggers": ["inactivity"],
+                    "details": {
+                        "inactivity": {
+                            "days_inactive": 40,
+                            "tier": "primary",
+                            "last_purchase_date": "2025-04-01",
+                        }
+                    },
+                }
+            }
+        )
+        self.assertIn("días desde la última compra", inactivity_html)
+        self.assertNotIn("<table", inactivity_html)
 
     def test_render_commercial_rationale_section_keeps_plain_text(self):
         service = self._service()

@@ -59,6 +59,7 @@ class TestCrmLeadReactivation(TransactionCase):
                 "reactivation_confidence": 0.85,
                 "reactivation_cycle_id": "cycle-2025-06-23",
                 "reactivation_client_message": "Hola, tenemos una oferta para usted.",
+                "reactivation_evidence_summary": "Disparadores: Inactividad",
             }
         )
         self.assertTrue(lead.reactivation_is_agent)
@@ -67,6 +68,9 @@ class TestCrmLeadReactivation(TransactionCase):
         self.assertEqual(lead.reactivation_confidence, 0.85)
         self.assertEqual(
             lead.reactivation_client_message, "Hola, tenemos una oferta para usted."
+        )
+        self.assertEqual(
+            lead.reactivation_evidence_summary, "Disparadores: Inactividad"
         )
 
     def test_reactivation_attribution_id_unique(self):
