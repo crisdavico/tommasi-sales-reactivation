@@ -35,6 +35,28 @@ class ReactivationServiceTester:
         return caller
 
 
+def upsert_whatsapp_config(env, company=None, **overrides):
+    """Search by company_id, write if found, else create."""
+    company = company or env.company
+    values = {
+        "name": "WhatsApp test",
+        "company_id": company.id,
+        "router_base_url": "https://router.test",
+        "outbound_key_id": "out_test_config",
+        "outbound_api_key": "test-outbound-api-key-000000000001",
+        "outbound_hmac_secret": "test-outbound-hmac-secret-00000001",
+        "chatwoot_account_id": 1,
+        "chatwoot_inbox_id": 5,
+        **overrides,
+    }
+    existing = env["tommasi.whatsapp.config"].search(
+        [("company_id", "=", company.id)], limit=1)
+    if existing:
+        existing.write(values)
+        return existing
+    return env["tommasi.whatsapp.config"].create(values)
+
+
 def confirm_test_sale_order(order, env):
     """Confirm a sale order, setting delivery when required by customizations."""
     order = order.sudo()

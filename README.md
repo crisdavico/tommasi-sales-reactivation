@@ -1,8 +1,8 @@
 # Tommasi Sales Reactivation
 
-**Module version**: `15.0.1.9.0` (Chatwoot router scoped five-header HMAC outbound)
+**Module version**: `15.0.1.10.0` (seller open opportunities MCP tool)
 
-Odoo 15 addon that powers the Tommasi sales reactivation LangGraph agent: configuration, CRM customization, seller-scoped security, and seven MCP tools exposed through the integrated Odoo MCP server.
+Odoo 15 addon that powers the Tommasi sales reactivation LangGraph agent: configuration, CRM customization, seller-scoped security, and eight MCP tools exposed through the integrated Odoo MCP server.
 
 LangGraph detection agents call this module's `llm.tool` surface — they never access the Odoo database directly.
 
@@ -16,7 +16,7 @@ LangGraph detection agents call this module's `llm.tool` surface — they never 
 | `service_candidates.py` | Portfolio screening (`get_reactivation_candidates`) |
 | `service_detection.py` | Per-customer detection context |
 | `service_facts.py` | Invoice aggregates, sales/product history, batch invoice facts |
-| `service_opportunities.py` | Open opportunities read |
+| `service_opportunities.py` | Open opportunities read (`get_agent_opportunities`, `get_seller_open_opportunities`) |
 | `service_recommendations.py` | Product ranking and batch recommendations |
 | `service_create_guards.py` | CRM create with savepoints, row locks, v2 outcomes |
 | `service_whatsapp.py` | Partner WhatsApp outbound via Chatwoot router (`send_whatsapp_to_partner`) |
@@ -28,7 +28,7 @@ LangGraph detection agents call this module's `llm.tool` surface — they never 
 |------|------------------|
 | **Configuration** | Per-company singleton with operational parameters, enabled sellers, and priority rules |
 | **CRM** | Custom pipeline stages and reactivation metadata on `crm.lead` |
-| **MCP tools** | Seven `@llm_tool` methods on `tommasi.reactivation.service` for cycle bootstrap, candidate pre-filtering, detection, recommendations, CRM writes, and partner WhatsApp outbound. Four tools accept retrocompatible batch parameters (`include_context`, `customer_ids[]`, `payloads[]`) to reduce detection-cycle MCP calls from O(customers) to O(sellers) |
+| **MCP tools** | Eight `@llm_tool` methods on `tommasi.reactivation.service` for cycle bootstrap, candidate pre-filtering, detection, recommendations, CRM writes, seller open-lead reads, and partner WhatsApp outbound. Four tools accept retrocompatible batch parameters (`include_context`, `customer_ids[]`, `payloads[]`) to reduce detection-cycle MCP calls from O(customers) to O(sellers) |
 | **Security** | *Reactivation Agent* group with seller-scoped record rules driven by `reactivation_seller_id` in context |
 
 ## Prerequisites
@@ -74,7 +74,8 @@ All tools are registered on `tommasi.reactivation.service` via `@llm_tool` from 
 | `get_customer_detection_context` | read | Sales history, inactivity, product history, volume decline with stock, undelivered SO lines |
 | `get_product_recommendations` | read | Ranked product suggestions with stock, net pricelist price, pricelist discount reference, and reason tier |
 | `create_crm_opportunity` | write | Create a reactivation opportunity in *Pendiente de revisión* with server-side validation |
-| `get_agent_opportunities` | read | List open agent opportunities for deduplication |
+| `get_agent_opportunities` | read | List open agent opportunities for a customer (deduplication) |
+| `get_seller_open_opportunities` | read | List every open agent opportunity for one seller (seller-facing) |
 | `send_whatsapp_to_partner` | write (destructive) | Send an approved WhatsApp template to a partner via the Chatwoot router |
 
 > [!TIP]
@@ -86,15 +87,43 @@ Read tools carry `read_only_hint=True` and `idempotent_hint=True` where applicab
 
 ### MCP response envelope
 
-All seven `@llm_tool` methods on `tommasi.reactivation.service` return a transport envelope:
+All eight `@llm_tool` methods on `tommasi.reactivation.service` return a transport envelope:
 
 ```json
 {"data": <tool_payload>, "request_id": "<optional>"}
 ```
 
-The LangGraph reactivation agent unwraps strictly via `{data: ...}`; golden examples for the five tools it calls are mirrored in `tests/fixtures/contracts/` (also present in the Agent repo). Contract assertions live in `tests/mcp_contract.py`; transport shape locks are in `tests/test_mcp_transport_contract.py`.
+The LangGraph reactivation agent unwraps strictly via `{data: ...}`; golden examples for the five tools it calls are mirrored in `tests/fixtures/contracts/` (also present in the Agent repo). `get_seller_open_opportunities` has an Odoo-only golden in the same folder — do not mirror it to `tommasi-reactivation-agent`. Contract assertions live in `tests/mcp_contract.py`; transport shape locks are in `tests/test_mcp_transport_contract.py`.
 
 **v2 batch create** (payloads with `operation_key`): inner payload includes `contract_version: 2` and per-row `outcome` values (`created`, `existing`, `rejected`, `deferred`). Legacy creates without `operation_key` keep the v1 inner shape inside the same envelope.
+
+### `get_seller_open_opportunities`
+
+Read-only list of **every open agent CRM opportunity for one seller**. Open means agent-created, active, assigned to `seller_id`, and in **Pendiente de revisión** or **Cliente contactado**. Empty `opportunities` is success. Order is `create_date` descending. No stage override, pagination, or IDs in v1.
+
+**Args:** `seller_id` (required), `request_id` (optional).
+
+**Example envelope**
+
+```json
+{
+  "request_id": "req-seller-open-opps-001",
+  "data": {
+    "seller_id": 81,
+    "opportunities": [
+      {
+        "customer_name": "Acme SA",
+        "stage": "Pendiente de revisión",
+        "created_at": "2026-07-08 21:05:22",
+        "opportunity_url": "http://localhost:8069/web#id=9001&model=crm.lead&view_type=form",
+        "client_message": "Hola, tenemos una oferta para usted."
+      }
+    ]
+  }
+}
+```
+
+`client_message` is always present (`""` when the lead has none). Rows do not include `opportunity_id` or `customer_id`.
 
 ### `send_whatsapp_to_partner`
 
@@ -266,6 +295,8 @@ Two custom stages are installed (native *Won* stage is reused for closed-won):
 
 `crm.lead` is extended with reactivation metadata: source, opportunity reference ID, trigger type, confidence, cycle ID, client message, and contact timestamp. A dedicated **Reactivation** notebook page appears on agent opportunities.
 
+On create, the server writes HTML into `crm.lead.description`. **Categorías Estrellas** is description-only (not a `crm.lead` field): when ranking is non-empty, the table is inserted immediately after **Productos Estrellas**. MCP tools and envelopes are unchanged.
+
 ## Data models
 
 | Model | Role |
@@ -279,7 +310,7 @@ Two custom stages are installed (native *Won* stage is reused for closed-won):
 
 ## Testing
 
-Post-install tests cover configuration, CRM fields and stages, seller-scoped security, MCP transport contracts, batch tools, WhatsApp outbound, and all seven MCP tools:
+Post-install tests cover configuration, CRM fields and stages, seller-scoped security, MCP transport contracts, batch tools, WhatsApp outbound, and all eight MCP tools:
 
 ```bash
 # From the Doodba project root — full module
@@ -299,7 +330,7 @@ Test modules:
 | `test_reactivation_security.py` | Context-scoped record rules for partners and leads |
 | `test_reactivation_bootstrap_detection.py` | Bootstrap, detection context, query-count bounds |
 | `test_reactivation_candidates.py` | Candidate screening (incl. live dropoff-only), bootstrap filtering, overstock cache |
-| `test_reactivation_batch.py` | Batch MCP tools, stage XML-ID lookup caching |
+| `test_reactivation_batch.py` | Batch MCP tools, seller open opportunities, stage XML-ID lookup caching |
 | `test_reactivation_recommendations.py` | Product ranking and batch recommendations |
 | `test_reactivation_crm_create.py` | Scalar and batch CRM create |
 | `test_reactivation_create_safety.py` | Write guards, cooldown, seller cap, idempotency |

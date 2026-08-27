@@ -694,6 +694,29 @@ class TommasiReactivationServiceRendering(models.AbstractModel):
             + self._render_odoo_html_table(headers, body_rows)
         )
 
+    def _render_star_categories_section_html(self, rows):
+        """Render the star-categories table for opportunity descriptions."""
+        if not rows:
+            return ""
+        headers = ["Nombre", "Unidades (últimos 6 meses)", "Participación"]
+        body_rows = []
+        for row in rows:
+            share_pct = float_round(
+                (row.get("share") or 0.0) * 100.0,
+                precision_digits=1,
+            )
+            body_rows.append(
+                [
+                    escape(row.get("name") or ""),
+                    escape(self._format_evidence_qty(row.get("total_quantity"))),
+                    escape("%.1f%%" % share_pct),
+                ]
+            )
+        return (
+            "<h3>Categorías Estrellas</h3>"
+            + self._render_odoo_html_table(headers, body_rows)
+        )
+
     def _render_suggested_products_section_html(
         self, suggested_products, stock_batch, config=None
     ):
@@ -761,6 +784,12 @@ class TommasiReactivationServiceRendering(models.AbstractModel):
             )
             if star_products_html:
                 parts.append(star_products_html)
+            star_categories = self._get_customer_star_categories(customer_id)
+            star_categories_html = self._render_star_categories_section_html(
+                star_categories
+            )
+            if star_categories_html:
+                parts.append(star_categories_html)
         suggested_products = payload.get("suggested_products") or []
         products_html = self._render_suggested_products_section_html(
             suggested_products, stock_batch, config=config
@@ -847,4 +876,7 @@ class TommasiReactivationServiceRendering(models.AbstractModel):
             "evidence_summary": payload.get("evidence_summary") or "",
             "commercial_rationale": payload.get("commercial_rationale"),
         }
+        enforce_seller_cap = payload.get("enforce_seller_cap")
+        if isinstance(enforce_seller_cap, bool):
+            normalized["enforce_seller_cap"] = enforce_seller_cap
         return None, normalized

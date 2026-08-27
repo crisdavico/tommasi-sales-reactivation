@@ -241,6 +241,34 @@ class TestReactivationCreateSafety(TransactionCase):
         self.assertEqual(result["outcome"], "rejected")
         self.assertEqual(result["reason"], "seller_cap_exceeded")
 
+    def test_v2_creates_when_seller_cap_enforcement_disabled(self):
+        config = self.Config.get_singleton()
+        config.write({"opportunity_cap_per_seller": 1})
+        self._service().create_crm_opportunity(payload=self._valid_create_payload())
+        other_customer = self.env["res.partner"].create(
+            {
+                "name": "Cap Bypass Customer",
+                "vat": "30-33332222-1",
+                "user_id": self.seller_user.id,
+                "customer_rank": 1,
+            }
+        )
+        other_key = self._service()._build_reactivation_operation_key(
+            "safety-cycle-006",
+            self.seller_user.id,
+            other_customer.id,
+        )
+        result = self._service().create_crm_opportunity(
+            payload=self._valid_create_payload(
+                customer_id=other_customer.id,
+                cycle_id="safety-cycle-006",
+                operation_key=other_key,
+                enforce_seller_cap=False,
+            )
+        )
+        self.assertEqual(result["outcome"], "created")
+        self.assertTrue(result.get("opportunity_id"))
+
     def test_v2_batch_wraps_contract_version(self):
         result = self._service().create_crm_opportunity(
             payloads=[self._valid_create_payload()]

@@ -13,7 +13,8 @@ from odoo import fields
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
 
-from odoo.addons.tommasi_sales_reactivation.tests.common import post_test_out_invoice
+from odoo.addons.tommasi_sales_reactivation.tests.common import (
+    post_test_out_invoice, upsert_whatsapp_config)
 from odoo.addons.tommasi_sales_reactivation.tests.mcp_contract import (
     ADDITIVE_CONTRACT_FIXTURES,
     CONTRACT_TOOL_NAMES,
@@ -157,6 +158,18 @@ class TestMcpTransportContract(TransactionCase):
         self.assertEqual(payload["seller_id"], self.seller_user.id)
         self.assertIn("results", payload)
 
+    def test_get_seller_open_opportunities_returns_envelope(self):
+        raw = self._raw_service().get_seller_open_opportunities(
+            seller_id=self.seller_user.id,
+            request_id="req-seller-open-opps-test",
+        )
+        shape, payload = classify_tool_response(raw)
+        self.assertEqual(shape, "envelope")
+        assert_tool_contract("get_seller_open_opportunities", raw)
+        self.assertEqual(payload["seller_id"], self.seller_user.id)
+        self.assertEqual(payload["opportunities"], [])
+        self.assertEqual(raw["request_id"], "req-seller-open-opps-test")
+
     def test_get_product_recommendations_returns_envelope(self):
         self._add_product_stock(self.product)
         raw = self._raw_service().get_product_recommendations(
@@ -213,18 +226,7 @@ class TestMcpTransportContract(TransactionCase):
                 "allow_whatsapp_communication": True,
             }
         )
-        self.env["tommasi.whatsapp.config"].create(
-            {
-                "name": "Transport WhatsApp",
-                "company_id": self.env.company.id,
-                "router_base_url": "https://router.test",
-                "outbound_key_id": "out_test_transport",
-                "outbound_api_key": "test-outbound-api-key-transport00001",
-                "outbound_hmac_secret": "test-outbound-hmac-secret-transport",
-                "chatwoot_account_id": 1,
-                "chatwoot_inbox_id": 5,
-            }
-        )
+        upsert_whatsapp_config(self.env)
         response = Mock()
         response.status_code = 200
         response.json.return_value = {"conversation_id": 42, "message_id": 99}

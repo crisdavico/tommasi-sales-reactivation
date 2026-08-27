@@ -1,0 +1,30 @@
+# SDD change state — orchestrator-managed
+change: add-star-categories-to-crm-opportunities
+schema: spec-driven
+created: 2026-08-13
+status: active
+artifact_store: openspec
+strict_tdd: true
+delivery_strategy: ask-on-risk
+chain_strategy: stacked-to-main
+phase: verify
+apply_slice: complete
+updated: 2026-08-13
+phases:
+  init: done
+  explore: done
+  propose: done
+  spec: done
+  design: done
+  tasks: done
+  apply: done
+  verify: done
+  archive: pending
+next: resolve-review
+notes: |
+  Apply 14/14 complete. Verify fail: 11/11 spec scenarios COMPLIANT;
+  suite exit 1 from 6 pre-existing WhatsApp unique-constraint errors;
+  lint exit 1 from Doodba .pre-commit-config.yaml exclude regex.
+notes: |
+  Tasks: 14 TDD items, 0/14 complete. Chain: stacked-to-main.
+  Edit-authority grant declined; tasks.md no longer names the Doodba parent git root.

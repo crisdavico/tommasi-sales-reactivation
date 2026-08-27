@@ -371,9 +371,11 @@ class TestReactivationRendering(ReactivationServiceTestMixin, TransactionCase):
         )
         evidence_pos = html.index("Resumen de evidencia")
         stars_pos = html.index("Productos Estrellas")
+        categories_pos = html.index("Categorías Estrellas")
         products_pos = html.index("Productos sugeridos")
         self.assertLess(evidence_pos, stars_pos)
-        self.assertLess(stars_pos, products_pos)
+        self.assertLess(stars_pos, categories_pos)
+        self.assertLess(categories_pos, products_pos)
 
     def test_render_star_products_section_html(self):
         service = self._service()
@@ -399,6 +401,48 @@ class TestReactivationRendering(ReactivationServiceTestMixin, TransactionCase):
         html = service._render_star_products_section_html([])
         self.assertEqual(html, "")
 
+    def test_render_star_categories_section_html(self):
+        service = self._service()
+        html = service._render_star_categories_section_html(
+            [
+                {
+                    "name": "Aceites <script>",
+                    "total_quantity": 12,
+                    "share": 0.125,
+                }
+            ]
+        )
+        self.assertIn("Categorías Estrellas", html)
+        self.assertIn("<th>Nombre</th>", html)
+        self.assertIn("<th>Unidades (últimos 6 meses)</th>", html)
+        self.assertIn("<th>Participación</th>", html)
+        self.assertIn("Aceites &lt;script&gt;", html)
+        self.assertNotIn("<script>", html)
+        self.assertIn(">12<", html)
+        self.assertIn("12.5%", html)
+
+    def test_render_star_categories_section_html_omits_empty_rows(self):
+        service = self._service()
+        html = service._render_star_categories_section_html([])
+        self.assertEqual(html, "")
+
+    def test_render_star_categories_section_html_share_rounds_half_up_one_decimal(
+        self,
+    ):
+        service = self._service()
+        html = service._render_star_categories_section_html(
+            [
+                {
+                    "name": "Sixth Share",
+                    "total_quantity": 1,
+                    "share": 1.0 / 6.0,
+                }
+            ]
+        )
+        self.assertIn("16.7%", html)
+        self.assertNotIn("16.6%", html)
+        self.assertNotIn("16.67%", html)
+
     def test_render_opportunity_description_omits_star_products_without_customer(self):
         service = self._service()
         html = service._render_opportunity_description(
@@ -417,6 +461,7 @@ class TestReactivationRendering(ReactivationServiceTestMixin, TransactionCase):
             stock_batch={self.product.id: {"available_qty": 10.0}},
         )
         self.assertNotIn("Productos Estrellas", html)
+        self.assertNotIn("Categorías Estrellas", html)
 
     def test_render_suggested_products_omits_currency_column(self):
         service = self._service()

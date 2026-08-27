@@ -21,6 +21,7 @@ CONTRACT_TOOL_NAMES = (
     "bootstrap_reactivation_cycle",
     "get_reactivation_candidates",
     "get_agent_opportunities",
+    "get_seller_open_opportunities",
     "get_product_recommendations",
     "create_crm_opportunity",
     "send_whatsapp_to_partner",
@@ -37,6 +38,7 @@ TOOL_REQUIRED_DATA_KEYS = {
     "bootstrap_reactivation_cycle": frozenset({"config", "sellers", "customers"}),
     "get_reactivation_candidates": frozenset({"seller_id", "candidates"}),
     "get_agent_opportunities": frozenset({"seller_id", "results"}),
+    "get_seller_open_opportunities": frozenset({"seller_id", "opportunities"}),
     "get_product_recommendations": frozenset({"seller_id", "results"}),
     "create_crm_opportunity": frozenset({"results"}),
     "send_whatsapp_to_partner": frozenset(

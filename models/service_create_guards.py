@@ -59,14 +59,9 @@ class TommasiReactivationCreateGuards(models.AbstractModel):
     def _count_open_agent_opportunities(self, seller_id):
         Lead = self._lead_model_for_seller(seller_id)
         seller_env = self._env_with_seller(seller_id)
-        open_stage_ids = self._open_reactivation_stage_ids(seller_env)
-        domain = [
-            ("user_id", "=", seller_id),
-            ("reactivation_is_agent", "=", True),
-            ("active", "=", True),
-        ]
-        if open_stage_ids:
-            domain.append(("stage_id", "in", open_stage_ids))
+        domain = self._open_agent_opportunities_domain(
+            seller_id, seller_env=seller_env
+        )
         return Lead.search_count(domain)
 
     def _customer_has_open_agent_opportunity(self, customer_id, seller_id):
@@ -204,18 +199,19 @@ class TommasiReactivationCreateGuards(models.AbstractModel):
                 ),
             )
 
-        open_count = self._count_open_agent_opportunities(seller_id)
-        if open_count >= config.opportunity_cap_per_seller:
-            return self._v2_create_result(
-                CREATE_OUTCOME_REJECTED,
-                customer_id=customer_id,
-                operation_key=operation_key,
-                reason="seller_cap_exceeded",
-                message=(
-                    "Seller has reached the open reactivation opportunity cap "
-                    "(%s)." % config.opportunity_cap_per_seller
-                ),
-            )
+        if data.get("enforce_seller_cap", True):
+            open_count = self._count_open_agent_opportunities(seller_id)
+            if open_count >= config.opportunity_cap_per_seller:
+                return self._v2_create_result(
+                    CREATE_OUTCOME_REJECTED,
+                    customer_id=customer_id,
+                    operation_key=operation_key,
+                    reason="seller_cap_exceeded",
+                    message=(
+                        "Seller has reached the open reactivation opportunity cap "
+                        "(%s)." % config.opportunity_cap_per_seller
+                    ),
+                )
 
         return None
 

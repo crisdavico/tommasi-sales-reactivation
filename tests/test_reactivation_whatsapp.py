@@ -14,6 +14,7 @@ from odoo.tools import mute_logger
 from odoo.addons.tommasi_sales_reactivation.tests.common import (
     ReactivationServiceTestMixin,
     unwrap_tool_result,
+    upsert_whatsapp_config,
 )
 from odoo.addons.tommasi_sales_reactivation.tests.mcp_contract import (
     assert_mcp_envelope,
@@ -94,10 +95,14 @@ class TestWhatsappConfig(TransactionCase):
             }
         )
 
+    def setUp(self):
+        super().setUp()
+        self.WhatsappConfig.search([("company_id", "=", self.company_b.id)]).unlink()
+
     def _config_vals(self, **overrides):
         values = {
             "name": "WhatsApp test",
-            "company_id": self.env.company.id,
+            "company_id": self.company_b.id,
             "router_base_url": "https://router.test",
             "outbound_key_id": "out_test_config",
             "outbound_api_key": "test-outbound-api-key-000000000001",
@@ -173,8 +178,9 @@ class TestReactivationWhatsapp(ReactivationServiceTestMixin, TransactionCase):
                 "currency_id": cls.env.company.currency_id.id,
             }
         )
-        cls.whatsapp_config = cls.WhatsappConfig.create(
-            {
+        cls.whatsapp_config = upsert_whatsapp_config(
+            cls.env,
+            **{
                 "name": "Main WhatsApp",
                 "company_id": cls.env.company.id,
                 "router_base_url": "https://router.test",

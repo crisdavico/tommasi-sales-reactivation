@@ -8,6 +8,24 @@ from odoo.addons.llm_tool.decorators import llm_tool
 class TommasiReactivationServiceOpportunities(models.AbstractModel):
     _inherit = "tommasi.reactivation.service"
 
+    def _open_agent_opportunities_domain(self, seller_id, seller_env=None):
+        """Build seller-wide domain for open agent CRM opportunities.
+
+        Same predicates as ``_count_open_agent_opportunities``: agent-created,
+        active, assigned to ``seller_id``, and in the open reactivation stages.
+        Does not filter by customer.
+        """
+        seller_env = seller_env or self._env_with_seller(seller_id)
+        open_stage_ids = self._open_reactivation_stage_ids(seller_env)
+        domain = [
+            ("user_id", "=", seller_id),
+            ("reactivation_is_agent", "=", True),
+            ("active", "=", True),
+        ]
+        if open_stage_ids:
+            domain.append(("stage_id", "in", open_stage_ids))
+        return domain
+
     def _agent_opportunities_domain(
         self,
         seller_env,
@@ -61,6 +79,20 @@ class TommasiReactivationServiceOpportunities(models.AbstractModel):
             row["client_message"] = lead.reactivation_client_message or ""
             row["evidence_summary"] = lead.reactivation_evidence_summary or ""
         return row
+
+    def _serialize_seller_open_opportunity(self, lead):
+        """Return one seller-facing open opportunity row."""
+        partner = lead.partner_id
+        customer_name = (
+            partner.display_name if partner else lead.partner_name
+        ) or ""
+        return {
+            "customer_name": customer_name,
+            "stage": lead.stage_id.name or "",
+            "created_at": fields.Datetime.to_string(lead.create_date),
+            "opportunity_url": self._crm_lead_form_url(lead.id),
+            "client_message": lead.reactivation_client_message or "",
+        }
 
     def _opportunities_for_customer(
         self,
@@ -253,5 +285,45 @@ class TommasiReactivationServiceOpportunities(models.AbstractModel):
 
         return self._wrap_mcp_response(
             {"seller_id": seller_id, "results": results},
+            request_id=request_id,
+        )
+
+    @llm_tool(read_only_hint=True, idempotent_hint=True)
+    def get_seller_open_opportunities(
+        self,
+        seller_id: int,
+        request_id: str = None,
+    ) -> dict:
+        """Lista todas las oportunidades de reactivación abiertas de un vendedor.
+
+        Devuelve el portafolio abierto del vendedor en las etapas **Pendiente de
+        revisión** y **Cliente contactado**, sin filtrar por cliente. Sirve para
+        que un agente de llamadas vea las leads pendientes de ese vendedor.
+
+        **Filtros aplicados**
+        - Solo oportunidades creadas por el agente (``reactivation_is_agent``).
+        - Solo oportunidades activas asignadas a ``seller_id``.
+        - Etapas abiertas fijas (sin override de ``statuses``).
+        - Orden: ``create_date`` descendente.
+
+        Una lista vacía no es error: el vendedor no tiene leads abiertas.
+
+        Args:
+            seller_id: ID de ``res.users`` del vendedor asignado.
+            request_id: Identificador opcional de la petición MCP.
+        Returns:
+            ``{seller_id, opportunities[]}``. Cada fila incluye ``customer_name``,
+            ``stage``, ``created_at``, ``opportunity_url`` y ``client_message``.
+        """
+        seller_env = self._env_with_seller(seller_id)
+        domain = self._open_agent_opportunities_domain(
+            seller_id, seller_env=seller_env
+        )
+        leads = seller_env["crm.lead"].search(domain, order="create_date desc")
+        rows = [
+            self._serialize_seller_open_opportunity(lead) for lead in leads
+        ]
+        return self._wrap_mcp_response(
+            {"seller_id": seller_id, "opportunities": rows},
             request_id=request_id,
         )

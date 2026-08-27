@@ -764,6 +764,7 @@ class TestReactivationBootstrapDetection(ReactivationServiceTestMixin, Transacti
             "get_reactivation_candidates",
             "get_product_recommendations",
             "get_agent_opportunities",
+            "get_seller_open_opportunities",
             "create_crm_opportunity",
             "send_whatsapp_to_partner",
         }

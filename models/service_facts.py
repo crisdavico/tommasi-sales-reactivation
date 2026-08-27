@@ -158,6 +158,71 @@ class TommasiReactivationServiceFacts(models.AbstractModel):
             for row in self.env.cr.fetchall()
         ]
 
+    def _get_customer_star_categories(self, customer_id, days=None, limit=None):
+        """Return the customer's top categories by units sold in a rolling window.
+
+        Posted ``out_invoice`` product lines only; scopes to the commercial
+        partner tree and unified-agent company allow-list. Active storable
+        products with a resolvable direct category and positive quantity only.
+        Share is category units divided by all qualifying units.
+        """
+        commercial_partner_id = self._commercial_partner_id_for_customer(
+            customer_id
+        )
+        if not commercial_partner_id:
+            return []
+        allowed_company_ids = self.env["res.company"].sudo().search([]).ids
+        if not allowed_company_ids:
+            return []
+        window_days = days if days is not None else STAR_PRODUCTS_WINDOW_DAYS
+        top_n = limit if limit is not None else STAR_PRODUCTS_TOP_N
+        date_from = fields.Date.context_today(self) - timedelta(days=window_days)
+        self.env.cr.execute(
+            """
+            WITH qualifying AS (
+              SELECT template.categ_id AS categ_id,
+                     COALESCE(SUM(line.quantity), 0) AS qty
+                FROM account_move move
+                JOIN res_partner partner ON partner.id = move.partner_id
+                JOIN account_move_line line ON line.move_id = move.id
+                JOIN product_product product ON product.id = line.product_id
+                JOIN product_template template ON template.id = product.product_tmpl_id
+               WHERE move.move_type = 'out_invoice'
+                 AND move.state = 'posted'
+                 AND move.invoice_date >= %s
+                 AND partner.commercial_partner_id = %s
+                 AND move.company_id = ANY(%s)
+                 AND line.product_id IS NOT NULL
+                 AND line.quantity > 0
+                 AND product.active IS TRUE
+                 AND template.type = 'product'
+                 AND template.categ_id IS NOT NULL
+            GROUP BY template.categ_id
+            )
+            SELECT cat.id, cat.name, q.qty,
+                   q.qty / NULLIF((SELECT SUM(qty) FROM qualifying), 0)
+              FROM qualifying q
+              JOIN product_category cat ON cat.id = q.categ_id
+             ORDER BY q.qty DESC, cat.name ASC
+             LIMIT %s
+            """,
+            (
+                date_from,
+                commercial_partner_id,
+                list(allowed_company_ids),
+                top_n,
+            ),
+        )
+        return [
+            {
+                "category_id": row[0],
+                "name": row[1] or "",
+                "total_quantity": round(row[2], 2),
+                "share": float(row[3]) if row[3] is not None else 0.0,
+            }
+            for row in self.env.cr.fetchall()
+        ]
+
     def _invoice_facts_where_clauses(self, commercial_partner_id, date_from, date_to):
         """Build shared SQL WHERE clauses for invoice-facts queries."""
         where_clauses = [

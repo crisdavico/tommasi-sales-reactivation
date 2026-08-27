@@ -1,0 +1,105 @@
+schema: spec-driven
+
+project: tommasi_sales_reactivation
+
+context: |
+  Odoo 15 addon (version 15.0.1.10.0) built with whool and aggregated into the
+  Tommasi Doodba project. It owns configuration, seller-scoped security, CRM
+  reactivation metadata and authoritative write guards, and eight Odoo MCP tools.
+  Tests run in Odoo's post-install TransactionCase harness through Invoke and
+  Docker Compose from the Doodba project root.
+  Details: openspec/project-context.md. Skills: .atl/skill-registry.md.
+
+strict_tdd: true
+
+testing:
+  strict_tdd: true
+  strict_tdd_reason: >-
+    The addon has an established Odoo TransactionCase suite covering business
+    behavior, security, MCP transport contracts, batch operations, and CRM writes.
+  detected: 2026-08-13
+  runner:
+    framework: Odoo post-install TransactionCase
+    working_directory: /home/crisd/projects/tommasi/odoo/tommasi
+    command: invoke test -m tommasi_sales_reactivation
+    scoped_command: >-
+      invoke test --cur-file
+      odoo/custom/src/otros/tommasi_sales_reactivation/tests/test_example.py
+    notes: >-
+      The runner starts an isolated Odoo container and initializes or updates the
+      requested addon. It is not a standalone pytest suite.
+  layers:
+    unit:
+      available: true
+      tool: Odoo TransactionCase and SavepointCase-style database tests
+      path: tests/test_*.py
+      command: invoke test -m tommasi_sales_reactivation
+    integration:
+      available: true
+      tool: Odoo post-install tests with ORM, security rules, MCP registration, and CRM
+      path: tests/test_*.py
+      command: invoke test -m tommasi_sales_reactivation
+      notes: Unit and integration behavior share the same Odoo runner.
+    e2e:
+      available: false
+      tool: null
+      notes: Live MCP and WhatsApp scenarios are manual and are not a separate automated layer.
+  contract_fixtures:
+    available: true
+    path: tests/fixtures/contracts/
+    notes: >-
+      Golden MCP envelopes live in tests/fixtures/contracts/. Tools consumed by
+      tommasi-reactivation-agent MUST stay mirrored in that repo. Seller-facing
+      tools such as get_seller_open_opportunities are Odoo-only goldens.
+  coverage:
+    available: false
+    command: null
+  quality:
+    linter:
+      available: true
+      working_directory: /home/crisd/projects/tommasi/odoo/tommasi
+      command: invoke lint
+      tool: pre-commit (Black, isort, autoflake, Flake8, pylint-odoo)
+    formatter:
+      available: true
+      working_directory: /home/crisd/projects/tommasi/odoo/tommasi
+      command: pre-commit run --all-files
+      tool: Black, isort, Prettier, and XML formatting hooks
+    type_checker:
+      available: false
+      command: null
+
+rules:
+  proposal:
+    - State whether the change affects an MCP tool, envelope, or mirrored contract fixture.
+    - Include rollback and idempotency considerations for CRM or WhatsApp writes.
+    - Preserve the ownership split: the agent optimizes; Odoo enforces authoritative guards.
+  specs:
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY).
+    - Express acceptance behavior as Given/When/Then scenarios.
+    - 'Specify the MCP envelope as `{"data": <payload>, "request_id": "<optional>"}`.'
+    - Name seller-scope, company-scope, and authorization behavior explicitly.
+  design:
+    - Identify affected Odoo models, data/XML records, security rules, and MCP tools.
+    - Document transaction boundaries, savepoints, row locks, and idempotency where relevant.
+    - Record cross-repository contract impacts on tommasi-reactivation-agent.
+  tasks:
+    - Keep each implementation task paired with its Odoo test coverage.
+    - Include fixture parity tasks whenever an MCP transport contract changes.
+    - Keep changes small and avoid unrelated addon refactors.
+  apply:
+    tdd: true
+    test_command: invoke test -m tommasi_sales_reactivation
+    guidelines:
+      - Add or update a focused test before implementing behavior.
+      - Run commands from /home/crisd/projects/tommasi/odoo/tommasi.
+      - Do not log credentials, HMAC material, phone numbers, or full CRM payloads.
+      - Keep MCP reads side-effect free and protect writes with server-side validation.
+  verify:
+    test_command: invoke test -m tommasi_sales_reactivation
+    lint_command: invoke lint
+    coverage_threshold: 0
+    coverage_note: No coverage command is configured for this Doodba project.
+  archive:
+    - Warn before merging destructive data, security, CRM, or outbound-message deltas.
+    - Keep main specs and mirrored MCP contract fixtures aligned after merge.

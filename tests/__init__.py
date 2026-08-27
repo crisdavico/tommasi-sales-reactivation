@@ -8,6 +8,7 @@ from . import test_reactivation_bootstrap_detection
 from . import test_reactivation_recommendations
 from . import test_reactivation_rendering
 from . import test_reactivation_star_products
+from . import test_reactivation_star_categories
 from . import test_reactivation_crm_create
 from . import test_reactivation_batch
 from . import test_reactivation_create_safety

@@ -336,7 +336,12 @@ class TestReactivationCrmCreate(ReactivationServiceTestMixin, TransactionCase):
         self.assertNotIn("DEMO-LOW-001", description)
         self.assertNotIn('"signals"', description)
         self.assertIn("Productos Estrellas", description)
-        self.assertEqual(description.count('class="table table-bordered"'), 3)
+        self.assertIn("Categorías Estrellas", description)
+        self.assertLess(
+            description.index("Productos Estrellas"),
+            description.index("Categorías Estrellas"),
+        )
+        self.assertEqual(description.count('class="table table-bordered"'), 4)
 
     def test_create_crm_opportunity_preserves_client_message_newlines(self):
         self._add_product_stock(self.product)

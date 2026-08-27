@@ -1,5 +1,6 @@
 from datetime import date, timedelta
 from unittest.mock import patch
+from uuid import uuid4
 
 from odoo.addons.tommasi_sales_reactivation.tests.common import (
     ReactivationServiceTester,
@@ -78,6 +79,9 @@ class TestReactivationServiceBatch(TransactionCase):
         )
         cls.stage_pendiente = cls.env.ref(
             "tommasi_sales_reactivation.stage_pendiente_revision"
+        )
+        cls.stage_contactado = cls.env.ref(
+            "tommasi_sales_reactivation.stage_cliente_contactado"
         )
         cls.other_seller = cls.env["res.users"].create(
             {
@@ -172,24 +176,34 @@ class TestReactivationServiceBatch(TransactionCase):
         payload.update(overrides)
         return payload
 
-    def _create_agent_lead(self, customer):
+    def _create_agent_lead(self, customer, seller=None, **overrides):
+        seller = seller or self.seller_user
+        values = {
+            "name": "Batch agent opportunity",
+            "type": "opportunity",
+            "partner_id": customer.id,
+            "user_id": seller.id,
+            "stage_id": self.stage_pendiente.id,
+            "reactivation_is_agent": True,
+            "reactivation_attribution_id": "batch-attr-%s" % uuid4().hex,
+            "reactivation_client_message": "Hola %s" % customer.name,
+            "reactivation_evidence_summary": "Evidencia %s" % customer.name,
+        }
+        values.update(overrides)
         return (
             self.env["crm.lead"]
-            .with_context(reactivation_seller_id=self.seller_user.id)
-            .create(
-                {
-                    "name": "Batch agent opportunity",
-                    "type": "opportunity",
-                    "partner_id": customer.id,
-                    "user_id": self.seller_user.id,
-                    "stage_id": self.stage_pendiente.id,
-                    "reactivation_is_agent": True,
-                    "reactivation_attribution_id": "batch-attr-%s" % customer.id,
-                    "reactivation_client_message": "Hola %s" % customer.name,
-                    "reactivation_evidence_summary": "Evidencia %s" % customer.name,
-                }
-            )
+            .with_context(reactivation_seller_id=seller.id)
+            .create(values)
         )
+
+    def _seller_open_row_fields(self):
+        return {
+            "customer_name",
+            "stage",
+            "created_at",
+            "opportunity_url",
+            "client_message",
+        }
 
     # -- get_agent_opportunities batch ---------------------------------
 
@@ -298,6 +312,122 @@ class TestReactivationServiceBatch(TransactionCase):
         self.assertEqual(
             both["message"],
             "Provide exactly one of customer_id or customer_ids.",
+        )
+
+    # -- get_seller_open_opportunities ----------------------------------
+
+    def test_get_seller_open_opportunities_returns_flat_list_across_customers(self):
+        lead_a = self._create_agent_lead(self.customer)
+        lead_b = self._create_agent_lead(
+            self.customer_b, stage_id=self.stage_contactado.id
+        )
+        result = self._service().get_seller_open_opportunities(
+            seller_id=self.seller_user.id,
+        )
+        self.assertEqual(result["seller_id"], self.seller_user.id)
+        self.assertEqual(len(result["opportunities"]), 2)
+        by_name = {row["customer_name"]: row for row in result["opportunities"]}
+        self.assertEqual(
+            set(by_name),
+            {self.customer.display_name, self.customer_b.display_name},
+        )
+        self.assertEqual(
+            by_name[self.customer.display_name]["stage"],
+            "Pendiente de revisión",
+        )
+        self.assertEqual(
+            by_name[self.customer_b.display_name]["stage"],
+            "Cliente contactado",
+        )
+        self.assertIn(
+            "/web#id=%s&model=crm.lead&view_type=form" % lead_a.id,
+            by_name[self.customer.display_name]["opportunity_url"],
+        )
+        self.assertIn(
+            "/web#id=%s&model=crm.lead&view_type=form" % lead_b.id,
+            by_name[self.customer_b.display_name]["opportunity_url"],
+        )
+        for row in result["opportunities"]:
+            self.assertEqual(set(row), self._seller_open_row_fields())
+
+    def test_get_seller_open_opportunities_orders_by_create_date_desc(self):
+        older = self._create_agent_lead(self.customer)
+        newer = self._create_agent_lead(self.customer_b)
+        self.env.cr.execute(
+            "UPDATE crm_lead SET create_date = %s WHERE id = %s",
+            ("2026-01-01 10:00:00", older.id),
+        )
+        self.env.cr.execute(
+            "UPDATE crm_lead SET create_date = %s WHERE id = %s",
+            ("2026-06-01 10:00:00", newer.id),
+        )
+        older.invalidate_cache(["create_date"])
+        newer.invalidate_cache(["create_date"])
+        result = self._service().get_seller_open_opportunities(
+            seller_id=self.seller_user.id,
+        )
+        names = [row["customer_name"] for row in result["opportunities"]]
+        self.assertEqual(
+            names,
+            [self.customer_b.display_name, self.customer.display_name],
+        )
+
+    def test_get_seller_open_opportunities_excludes_non_open_and_foreign_leads(self):
+        kept = self._create_agent_lead(self.customer)
+        self._create_agent_lead(self.customer_b, reactivation_is_agent=False)
+        archived = self._create_agent_lead(self.customer_c)
+        archived.write({"active": False})
+        won_stage = self.env["crm.stage"].search([("is_won", "=", True)], limit=1)
+        self.assertTrue(won_stage)
+        self._create_agent_lead(self.customer_b, stage_id=won_stage.id)
+        self._create_agent_lead(self.foreign_customer, seller=self.other_seller)
+        result = self._service().get_seller_open_opportunities(
+            seller_id=self.seller_user.id,
+        )
+        self.assertEqual(len(result["opportunities"]), 1)
+        row = result["opportunities"][0]
+        self.assertEqual(row["customer_name"], self.customer.display_name)
+        self.assertIn(
+            "/web#id=%s&model=crm.lead&view_type=form" % kept.id,
+            row["opportunity_url"],
+        )
+
+    def test_get_seller_open_opportunities_empty_when_none(self):
+        result = self._service().get_seller_open_opportunities(
+            seller_id=self.seller_user.id,
+        )
+        self.assertEqual(result["seller_id"], self.seller_user.id)
+        self.assertEqual(result["opportunities"], [])
+        self.assertNotIn("message", result)
+
+    def test_get_seller_open_opportunities_always_includes_client_message(self):
+        self._create_agent_lead(
+            self.customer, reactivation_client_message=False
+        )
+        result = self._service().get_seller_open_opportunities(
+            seller_id=self.seller_user.id,
+        )
+        self.assertEqual(len(result["opportunities"]), 1)
+        row = result["opportunities"][0]
+        self.assertIn("client_message", row)
+        self.assertEqual(row["client_message"], "")
+
+    def test_get_seller_open_opportunities_does_not_leak_other_seller_leads(self):
+        self._create_agent_lead(self.customer)
+        self._create_agent_lead(self.foreign_customer, seller=self.other_seller)
+        owned = self._service().get_seller_open_opportunities(
+            seller_id=self.seller_user.id,
+        )
+        self.assertEqual(
+            [row["customer_name"] for row in owned["opportunities"]],
+            [self.customer.display_name],
+        )
+        other = self._service().get_seller_open_opportunities(
+            seller_id=self.other_seller.id,
+        )
+        self.assertEqual(
+            [row["customer_name"] for row in other["opportunities"]],
+            [self.foreign_customer.display_name],
         )
 
     # -- get_product_recommendations batch ------------------------------
