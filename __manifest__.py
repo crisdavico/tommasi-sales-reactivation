@@ -1,6 +1,6 @@
 {
     "name": "Tommasi Sales Reactivation",
-    "version": "15.0.1.10.0",
+    "version": "15.0.1.11.0",
     "category": "Sales/CRM",
     "summary": "Configuration and CRM foundation for the sales reactivation agent",
     "author": "Eynes SRL",
