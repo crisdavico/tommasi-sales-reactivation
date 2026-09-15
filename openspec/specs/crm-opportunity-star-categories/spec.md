@@ -52,13 +52,19 @@ Ranking MUST include only invoices in companies allowed in the current Odoo serv
 
 ### Requirement: Share, Placement, and Independent Omit
 
-Each row MUST show share as one-decimal percent of **all qualifying units** (not the top-3 subtotal), rounded half up (1 of 3 units MUST display `33.3%`). Top-3 shares MUST NOT need to total 100%. Non-empty ranking MUST render heading **Categorías Estrellas** immediately after **Productos Estrellas** (name, units, share). Empty ranking MUST omit heading and table even if other sections exist. The system MUST NOT add a `crm.lead` field or CRM tag.
+Each row MUST show share as one-decimal percent of **all qualifying units** (not the top-3 subtotal), rounded half up (1 of 3 units MUST display `33.3%`). Top-3 shares MUST NOT need to total 100%. Non-empty ranking MUST render heading **Categorías Estrellas** immediately after **Productos Estrellas** (name, units, share). The name column MUST use `product.category` `display_name` (hierarchical complete name), not the short `name`. Empty ranking MUST omit heading and table even if other sections exist. The system MUST NOT add a `crm.lead` field or CRM tag.
 
 #### Scenario: Denominator is all qualifying units
 
 - GIVEN qualifying units A=50, B=30, C=15, D=5
 - WHEN the section is rendered
 - THEN shares MUST be `50.0%`, `30.0%`, and `15.0%`; D MUST NOT appear
+
+#### Scenario: Hierarchical display name
+
+- GIVEN a child category under a parent that qualifies
+- WHEN the section is rendered
+- THEN the name MUST be that category's `display_name` (hierarchical complete name), not the short `name`
 
 #### Scenario: Placement and columns
 

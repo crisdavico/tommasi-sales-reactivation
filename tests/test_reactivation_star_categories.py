@@ -345,8 +345,9 @@ class TestReactivationStarCategories(ReactivationServiceTestMixin, TransactionCa
 
         self.assertEqual(
             [row["name"] for row in result],
-            ["Child Star Cat", "Parent Star Cat"],
+            [child.display_name, parent.display_name],
         )
+        self.assertEqual(result[0]["name"], "Parent Star Cat / Child Star Cat")
         self.assertEqual(result[0]["total_quantity"], 20.0)
         self.assertEqual(result[1]["total_quantity"], 5.0)
         self.assertNotEqual(result[0]["total_quantity"], 25.0)

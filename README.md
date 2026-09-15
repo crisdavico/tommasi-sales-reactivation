@@ -295,7 +295,7 @@ Two custom stages are installed (native *Won* stage is reused for closed-won):
 
 `crm.lead` is extended with reactivation metadata: source, opportunity reference ID, trigger type, confidence, cycle ID, client message, and contact timestamp. A dedicated **Reactivation** notebook page appears on agent opportunities.
 
-On create, the server writes HTML into `crm.lead.description`. **Categorías Estrellas** is description-only (not a `crm.lead` field): when ranking is non-empty, the table is inserted immediately after **Productos Estrellas**. MCP tools and envelopes are unchanged.
+On create, the server writes HTML into `crm.lead.description`. **Categorías Estrellas** is description-only (not a `crm.lead` field): when ranking is non-empty, the table is inserted immediately after **Productos Estrellas**, and category labels use `display_name` (hierarchical path). MCP tools and envelopes are unchanged.
 
 ## Data models
 

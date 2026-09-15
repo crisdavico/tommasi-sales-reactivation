@@ -165,6 +165,7 @@ class TommasiReactivationServiceFacts(models.AbstractModel):
         partner tree and unified-agent company allow-list. Active storable
         products with a resolvable direct category and positive quantity only.
         Share is category units divided by all qualifying units.
+        Row ``name`` is ``product.category.display_name`` (hierarchical).
         """
         commercial_partner_id = self._commercial_partner_id_for_customer(
             customer_id
@@ -199,7 +200,7 @@ class TommasiReactivationServiceFacts(models.AbstractModel):
                  AND template.categ_id IS NOT NULL
             GROUP BY template.categ_id
             )
-            SELECT cat.id, cat.name, q.qty,
+            SELECT cat.id, q.qty,
                    q.qty / NULLIF((SELECT SUM(qty) FROM qualifying), 0)
               FROM qualifying q
               JOIN product_category cat ON cat.id = q.categ_id
@@ -213,14 +214,17 @@ class TommasiReactivationServiceFacts(models.AbstractModel):
                 top_n,
             ),
         )
+        rows = self.env.cr.fetchall()
+        categories = self.env["product.category"].browse([row[0] for row in rows])
+        display_by_id = {category.id: category.display_name for category in categories}
         return [
             {
                 "category_id": row[0],
-                "name": row[1] or "",
-                "total_quantity": round(row[2], 2),
-                "share": float(row[3]) if row[3] is not None else 0.0,
+                "name": display_by_id.get(row[0]) or "",
+                "total_quantity": round(row[1], 2),
+                "share": float(row[2]) if row[2] is not None else 0.0,
             }
-            for row in self.env.cr.fetchall()
+            for row in rows
         ]
 
     def _invoice_facts_where_clauses(self, commercial_partner_id, date_from, date_to):
